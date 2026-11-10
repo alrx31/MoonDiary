@@ -23,6 +23,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="src\MoonDiary.Core\MoonDiary.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="src\**" />
+		<Compile Remove="tests\**" />
+		<EmbeddedResource Remove="src\**" />
+		<EmbeddedResource Remove="tests\**" />
+		<None Remove="src\**" />
+		<None Remove="tests\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\appicon.svg" ForegroundFile="Resources\appiconfg.svg" Color="#512BD4" />
 
