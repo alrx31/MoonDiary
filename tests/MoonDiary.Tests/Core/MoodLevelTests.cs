@@ -1,6 +1,6 @@
 using MoonDiary.Core;
 
-namespace MoonDiary.Tests;
+namespace MoonDiary.Tests.Core;
 
 public class MoodLevelTests
 {
