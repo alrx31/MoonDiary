@@ -12,11 +12,11 @@
 		<ApplicationTitle>MoonDiary</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.moondiary</ApplicationId>
+		<ApplicationId>com.moondiary.app</ApplicationId>
 		<ApplicationIdGuid>849f1601-d3e1-4498-84c8-f331db72d87b</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
 		<SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>

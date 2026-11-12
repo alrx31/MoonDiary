@@ -8,6 +8,9 @@ namespace MoonDiary.UiTests;
 
 public abstract class AppiumTest : IDisposable
 {
+    private const string AppPackage = "com.moondiary.app";
+    private const string AppActivity = "com.moondiary.app.MainActivity";
+
     private readonly ITestOutputHelper _output;
     private readonly string _testResultsDir;
 
@@ -31,8 +34,8 @@ public abstract class AppiumTest : IDisposable
         options.AutomationName = "UIAutomator2";
         options.DeviceName = deviceName;
         options.App = apkPath;
-        options.AddAdditionalAppiumOption("appPackage", "com.companyname.moondiary");
-        options.AddAdditionalAppiumOption("appActivity", "com.companyname.moondiary.MainActivity");
+        options.AddAdditionalAppiumOption("appPackage", AppPackage);
+        options.AddAdditionalAppiumOption("appActivity", AppActivity);
         options.AddAdditionalAppiumOption("fullReset", true);
         options.AddAdditionalAppiumOption("autoGrantPermissions", true);
 

@@ -43,7 +43,7 @@ appium
 Запуск тестов с TRX-отчётом:
 
 ```bash
-export MOONDIARY_APK_PATH="$PWD/bin/Release/net10.0-android/publish/com.companyname.moondiary-Signed.apk"
+export MOONDIARY_APK_PATH="$PWD/bin/Release/net10.0-android/publish/com.moondiary.app-Signed.apk"
 export MOONDIARY_TEST_RESULTS_DIR="$PWD/TestResults/Appium"
 dotnet test tests/MoonDiary.UiTests/MoonDiary.UiTests.csproj -c Release --logger "trx;LogFileName=appium.trx" --results-directory "$MOONDIARY_TEST_RESULTS_DIR"
 ```
