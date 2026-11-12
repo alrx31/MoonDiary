@@ -16,6 +16,7 @@ csharp_style_var_elsewhere = true:suggestion
 
 [tests/**/*.cs]
 dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1861.severity = none
 
 [*.{xaml,csproj,props,json,yml}]
 indent_size = 2

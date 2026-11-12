@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MoonDiary.Core\MoonDiary.Core.csproj" />
+    <ProjectReference Include="..\..\src\MoonDiary.Data\MoonDiary.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
