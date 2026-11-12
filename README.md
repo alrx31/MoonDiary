@@ -27,6 +27,20 @@ APK появляется в `bin/Debug/net10.0-android/com.moondiary.app-Signed.
 
 Установить SDK и JDK можно той же командой с целью `InstallAndroidDependencies` и свойством `-p:AcceptAndroidSdkLicenses=True`.
 
+### Скрипт сборки APK
+
+```bash
+scripts/build-apk.sh debug
+```
+
+```bash
+scripts/build-apk.sh release
+```
+
+Готовый файл кладётся в `artifacts/moondiary-<версия>-<режим>.apk`. Пути к SDK и JDK берутся из `ANDROID_HOME` и `JAVA_HOME`, по умолчанию `~/Library/Android/sdk` и `~/Library/Java/microsoft-jdk`.
+
+Релиз без своего ключа подписывается отладочным: такой APK ставится на своё устройство, но не годится для публикации. Свой ключ задаётся переменными `MOONDIARY_KEYSTORE`, `MOONDIARY_KEY_ALIAS`, `MOONDIARY_KEYSTORE_PASS` и при необходимости `MOONDIARY_KEY_PASS`.
+
 ## Тестовые параметры запуска
 
 Отладочная сборка читает параметры из extras интента, релизная их игнорирует.
