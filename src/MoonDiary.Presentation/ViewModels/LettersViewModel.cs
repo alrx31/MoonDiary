@@ -56,7 +56,7 @@ public sealed partial class LettersViewModel : ViewModelBase
         }
 
         var choice = await Dialogs.ChooseAsync(
-            string.Format(CultureInfo.InvariantCulture, Strings.Letters_ClosedMessage, Ru.FullDate(row.OpenDate)),
+            string.Format(CultureInfo.InvariantCulture, Strings.Letters_ClosedMessage, Ru.FullDateTime(row.OpenDate, row.OpenTime)),
             [],
             Strings.Common_Delete);
 

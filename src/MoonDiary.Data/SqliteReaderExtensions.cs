@@ -26,6 +26,9 @@ public static class SqliteReaderExtensions
     public static DateOnly GetDateOnly(this SqliteDataReader reader, string column) =>
         SqlValues.ToDateOnly(reader.GetText(column));
 
+    public static TimeOnly GetTimeOnly(this SqliteDataReader reader, string column) =>
+        SqlValues.ToTimeOnly(reader.GetText(column));
+
     public static DateTime GetUtcDateTime(this SqliteDataReader reader, string column) =>
         SqlValues.ToUtcDateTime(reader.GetText(column));
 

@@ -234,6 +234,45 @@ public sealed class PresentationTests : IDisposable
         Assert.Null(invalid.DatabaseFileName);
     }
 
+    [Fact]
+    public async Task NewLetter_PresetStepperAndTime_DefineOpenMoment()
+    {
+        var letter = new NewLetterViewModel(Context(), app.LetterService, Scheduler()) { Text = "привет" };
+        var start = app.LetterService.MinOpenDate;
+
+        Assert.Equal(7, letter.Days);
+        Assert.True(letter.Presets.Single(preset => preset.Days == 7).IsSelected);
+
+        letter.SelectPresetCommand.Execute(letter.Presets.Single(preset => preset.Days == 30));
+        letter.IncreaseCommand.Execute(null);
+        letter.IncreaseCommand.Execute(null);
+        letter.DecreaseCommand.Execute(null);
+
+        Assert.Equal(31, letter.Days);
+        Assert.Equal("31 день", letter.DaysText);
+        Assert.DoesNotContain(letter.Presets, preset => preset.IsSelected);
+
+        platform.PickedTime = new TimeOnly(21, 45);
+        await letter.PickTimeCommand.ExecuteAsync(null);
+        await letter.SendCommand.ExecuteAsync(null);
+
+        var saved = Assert.Single(await app.LetterService.GetListAsync());
+        Assert.Equal(start.AddDays(30), saved.OpenDate);
+        Assert.Equal(new TimeOnly(21, 45), saved.OpenTime);
+    }
+
+    [Fact]
+    public void NewLetter_OneDay_CannotGoLower()
+    {
+        var letter = new NewLetterViewModel(Context(), app.LetterService, Scheduler());
+
+        letter.SelectPresetCommand.Execute(letter.Presets[0]);
+
+        Assert.Equal(1, letter.Days);
+        Assert.False(letter.DecreaseCommand.CanExecute(null));
+        Assert.Equal(app.LetterService.MinOpenDate, letter.OpenDate);
+    }
+
     private ViewModelContext Context() => new(navigation, platform, platform);
 
     private ReminderScheduler Scheduler() =>

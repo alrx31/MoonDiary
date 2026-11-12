@@ -33,6 +33,10 @@ public sealed class FakePlatform :
     public Task<string?> ChooseAsync(string title, IReadOnlyList<string> options, string? destructive = null) =>
         Task.FromResult<string?>(null);
 
+    public TimeOnly? PickedTime { get; set; }
+
+    public Task<TimeOnly?> PickTimeAsync(string title, TimeOnly current) => Task.FromResult(PickedTime);
+
     public void Write(string source, Exception exception) => Errors.Add(exception);
 
     public Task<bool> IsPermissionGrantedAsync() => Task.FromResult(true);

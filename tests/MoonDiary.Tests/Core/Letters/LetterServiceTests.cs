@@ -27,17 +27,17 @@ public class LetterServiceTests
     }
 
     [Fact]
-    public async Task Letter_OpensAtFourInTheMorning()
+    public async Task Letter_OpensAtItsTime()
     {
         using var app = TestApp.At(2026, 11, 10, 12, 0);
-        var letter = await app.LetterService.CreateAsync("ты справился", Dates.D(2026, 11, 11));
+        var letter = await app.LetterService.CreateAsync("ты справился", Dates.D(2026, 11, 11), new TimeOnly(18, 30));
 
-        app.SetLocal(2026, 11, 11, 3, 59);
+        app.SetLocal(2026, 11, 11, 18, 29);
         Assert.Empty(await app.LetterService.OpenDueAsync());
         await Assert.ThrowsAsync<DomainException>(() => app.LetterService.ReadAsync(letter.Id));
         Assert.Null((await app.LetterService.GetListAsync())[0].Preview);
 
-        app.SetLocal(2026, 11, 11, 4, 0);
+        app.SetLocal(2026, 11, 11, 18, 30);
         Assert.Single(await app.LetterService.OpenDueAsync());
         Assert.Equal("ты справился", (await app.LetterService.ReadAsync(letter.Id)).Text);
         Assert.Equal("ты справился", (await app.LetterService.GetListAsync())[0].Preview);
@@ -61,13 +61,24 @@ public class LetterServiceTests
     }
 
     [Fact]
-    public async Task PendingNotifications_AreAtTenAndStopAfterMark()
+    public async Task Create_WithoutTime_OpensAtTen()
     {
         using var app = TestApp.At(2026, 11, 10, 12, 0);
+
         var letter = await app.LetterService.CreateAsync("привет", Dates.D(2026, 11, 12));
 
+        Assert.Equal(new TimeOnly(10, 0), letter.OpenTime);
+        Assert.Equal(new TimeOnly(10, 0), (await app.LetterService.GetListAsync())[0].OpenTime);
+    }
+
+    [Fact]
+    public async Task PendingNotifications_AreAtOpenTimeAndStopAfterMark()
+    {
+        using var app = TestApp.At(2026, 11, 10, 12, 0);
+        var letter = await app.LetterService.CreateAsync("привет", Dates.D(2026, 11, 12), new TimeOnly(21, 45));
+
         var pending = Assert.Single(await app.LetterService.GetPendingNotificationsAsync());
-        Assert.Equal(new DateTimeOffset(2026, 11, 12, 10, 0, 0, TestTime.Minsk), pending.NotifyAtLocal);
+        Assert.Equal(new DateTimeOffset(2026, 11, 12, 21, 45, 0, TestTime.Minsk), pending.NotifyAtLocal);
 
         await app.LetterService.MarkNotifiedAsync(letter.Id);
         Assert.Empty(await app.LetterService.GetPendingNotificationsAsync());

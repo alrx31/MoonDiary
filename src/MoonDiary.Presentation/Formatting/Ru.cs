@@ -44,6 +44,10 @@ public static class Ru
     public static string Time(DateTime utc, int offsetMinutes) =>
         utc.AddMinutes(offsetMinutes).ToString("HH:mm", CultureInfo.InvariantCulture);
 
+    public static string Time(TimeOnly time) => time.ToString("HH:mm", CultureInfo.InvariantCulture);
+
+    public static string FullDateTime(DateOnly date, TimeOnly time) => $"{FullDate(date)}, {Time(time)}";
+
     public static string Time(TimeSpan time) =>
         new TimeOnly(time.Ticks % TimeSpan.TicksPerDay).ToString("HH:mm", CultureInfo.InvariantCulture);
 

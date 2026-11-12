@@ -7,4 +7,6 @@ public interface IDialogService
     Task AlertAsync(string title, string message);
 
     Task<string?> ChooseAsync(string title, IReadOnlyList<string> options, string? destructive = null);
+
+    Task<TimeOnly?> PickTimeAsync(string title, TimeOnly current);
 }

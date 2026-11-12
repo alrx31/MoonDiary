@@ -29,7 +29,7 @@ public sealed class DataTransferRepository : IDataTransferRepository
             Reports = c.Query(ReportRepository.Map, "SELECT * FROM reports ORDER BY week_start"),
             Advice = c.Query(ReportRepository.MapAdvice, "SELECT * FROM report_advice ORDER BY report_id, sort_order"),
             Drafts = c.Query(DraftRepository.Map, "SELECT * FROM drafts ORDER BY day_key"),
-            Letters = c.Query(LetterRepository.Map, "SELECT * FROM letters ORDER BY open_date, created_at_utc"),
+            Letters = c.Query(LetterRepository.Map, "SELECT * FROM letters ORDER BY open_date, open_time, created_at_utc"),
             Settings = SettingsRepository.Read(c)
         };
     });

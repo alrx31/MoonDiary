@@ -6,7 +6,7 @@ namespace MoonDiary.Data.Repositories;
 
 public sealed class LetterRepository : ILetterRepository
 {
-    private const string Columns = "id, text, created_at_utc, open_date, opened_at_utc, notified";
+    private const string Columns = "id, text, created_at_utc, open_date, open_time, opened_at_utc, notified";
 
     private readonly SqliteConnectionFactory factory;
 
@@ -19,7 +19,7 @@ public sealed class LetterRepository : ILetterRepository
     {
         using var c = factory.Open();
 
-        return c.Query(Map, $"SELECT {Columns} FROM letters ORDER BY open_date, created_at_utc");
+        return c.Query(Map, $"SELECT {Columns} FROM letters ORDER BY open_date, open_time, created_at_utc");
     });
 
     public Task<Letter?> GetByIdAsync(Guid id) => Task.Run(() =>
@@ -46,16 +46,17 @@ public sealed class LetterRepository : ILetterRepository
     {
         var conflict = upsert
             ? " ON CONFLICT(id) DO UPDATE SET text = excluded.text, created_at_utc = excluded.created_at_utc, " +
-              "open_date = excluded.open_date, opened_at_utc = excluded.opened_at_utc, notified = excluded.notified"
+              "open_date = excluded.open_date, open_time = excluded.open_time, opened_at_utc = excluded.opened_at_utc, notified = excluded.notified"
             : string.Empty;
 
         c.Execute(
             transaction,
-            $"INSERT INTO letters ({Columns}) VALUES ($id, $text, $created, $open, $opened, $notified){conflict}",
+            $"INSERT INTO letters ({Columns}) VALUES ($id, $text, $created, $open, $time, $opened, $notified){conflict}",
             ("$id", SqlValues.FromGuid(letter.Id)),
             ("$text", letter.Text),
             ("$created", SqlValues.FromUtcDateTime(letter.CreatedAtUtc)),
             ("$open", SqlValues.FromDateOnly(letter.OpenDate)),
+            ("$time", SqlValues.FromTimeOnly(letter.OpenTime)),
             ("$opened", letter.OpenedAtUtc is null ? null : SqlValues.FromUtcDateTime(letter.OpenedAtUtc.Value)),
             ("$notified", letter.Notified ? 1 : 0));
     }
@@ -66,6 +67,7 @@ public sealed class LetterRepository : ILetterRepository
         Text = reader.GetText("text"),
         CreatedAtUtc = reader.GetUtcDateTime("created_at_utc"),
         OpenDate = reader.GetDateOnly("open_date"),
+        OpenTime = reader.GetTimeOnly("open_time"),
         OpenedAtUtc = reader.GetNullableUtcDateTime("opened_at_utc"),
         Notified = reader.GetBool("notified")
     };

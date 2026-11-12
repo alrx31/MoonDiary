@@ -44,7 +44,7 @@ public static class Strings
     public const string Wizard_FeelingsTitle = "Что чувствуешь";
     public const string Wizard_DraftLink = "Есть черновик";
     public const string Wizard_TextPlaceholder = "Можно написать или выбрать блок ниже";
-    public const string Wizard_SkipHint = "Смахните вправо, чтобы пропустить";
+    public const string Wizard_SkipHint = "Смахните, чтобы пропустить";
     public const string Wizard_ChooseScale = "не выбрано";
 
     public const string Summary_Filled = "заполнено карточек: {0} из 4";
@@ -99,7 +99,11 @@ public static class Strings
     public const string Letters_DeleteConfirm = "Удалить письмо? Восстановить его не получится.";
     public const string NewLetter_Title = "Новое письмо";
     public const string NewLetter_Send = "Отправить";
-    public const string NewLetter_Open = "Открыть:";
+    public const string NewLetter_Open = "Открыть через";
+    public const string NewLetter_WillOpen = "Откроется {0}";
+    public const string NewLetter_Time = "Время открытия";
+    public const string NewLetter_More = "Позже на день";
+    public const string NewLetter_Less = "Раньше на день";
     public const string NewLetter_Placeholder = "Текст письма, до 5000 символов";
     public const string Letter_Written = "Написано {0}";
 
@@ -157,5 +161,5 @@ public static class Strings
     public const string Notification_ReminderTitle = "Как прошёл день?";
     public const string Notification_ReminderText = "Запись займёт меньше минуты";
     public const string Notification_LetterTitle = "Письмо из прошлого";
-    public const string Notification_LetterText = "Сегодня открылось письмо, которое вы написали себе";
+    public const string Notification_LetterText = "Открылось письмо, которое вы написали себе";
 }

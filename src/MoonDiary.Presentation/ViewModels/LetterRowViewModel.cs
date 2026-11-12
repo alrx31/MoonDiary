@@ -9,9 +9,10 @@ public sealed class LetterRowViewModel
     {
         Id = item.Id;
         OpenDate = item.OpenDate;
+        OpenTime = item.OpenTime;
         IsOpen = item.IsOpen;
         Marker = item.IsOpen ? "✓" : "▸";
-        Date = Ru.FullDate(item.OpenDate);
+        Date = Ru.FullDateTime(item.OpenDate, item.OpenTime);
         Status = item.IsOpen ? $"«{item.Preview}»" : Strings.Letters_WillOpen;
         AutomationId = $"LettersRow{index.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
     }
@@ -19,6 +20,8 @@ public sealed class LetterRowViewModel
     public Guid Id { get; }
 
     public DateOnly OpenDate { get; }
+
+    public TimeOnly OpenTime { get; }
 
     public bool IsOpen { get; }
 

@@ -9,7 +9,7 @@ public sealed class LetterService
 {
     public const int PreviewLength = 40;
 
-    public static readonly TimeOnly NotificationTime = new(10, 0);
+    public static readonly TimeOnly DefaultOpenTime = new(10, 0);
 
     private readonly ILetterRepository letters;
     private readonly DayClock clock;
@@ -22,7 +22,7 @@ public sealed class LetterService
 
     public DateOnly MinOpenDate => clock.CurrentDayKey.AddDays(1);
 
-    public async Task<Letter> CreateAsync(string text, DateOnly openDate)
+    public async Task<Letter> CreateAsync(string text, DateOnly openDate, TimeOnly? openTime = null)
     {
         var trimmed = (text ?? string.Empty).Trim();
 
@@ -46,7 +46,8 @@ public sealed class LetterService
             Id = Guid.NewGuid(),
             Text = trimmed,
             CreatedAtUtc = clock.UtcNow,
-            OpenDate = openDate
+            OpenDate = openDate,
+            OpenTime = openTime ?? DefaultOpenTime
         };
 
         await letters.SaveAsync(letter);
@@ -56,12 +57,12 @@ public sealed class LetterService
 
     public async Task<IReadOnlyList<Letter>> OpenDueAsync()
     {
-        var today = clock.CurrentDayKey;
+        var now = clock.LocalNow.DateTime;
         var opened = new List<Letter>();
 
         foreach (var letter in await letters.GetAllAsync())
         {
-            if (letter.OpenedAtUtc is null && letter.OpenDate <= today)
+            if (letter.OpenedAtUtc is null && IsOpen(letter, now))
             {
                 letter.OpenedAtUtc = clock.UtcNow;
                 await letters.SaveAsync(letter);
@@ -74,17 +75,18 @@ public sealed class LetterService
 
     public async Task<IReadOnlyList<LetterListItem>> GetListAsync()
     {
-        var today = clock.CurrentDayKey;
+        var now = clock.LocalNow.DateTime;
         var all = (await letters.GetAllAsync())
-            .Select(letter => (Letter: letter, IsOpen: IsOpen(letter, today)))
+            .Select(letter => (Letter: letter, IsOpen: IsOpen(letter, now)))
             .ToList();
-        var closed = all.Where(item => !item.IsOpen).OrderBy(item => item.Letter.OpenDate);
-        var open = all.Where(item => item.IsOpen).OrderByDescending(item => item.Letter.OpenDate);
+        var closed = all.Where(item => !item.IsOpen).OrderBy(item => OpenMoment(item.Letter));
+        var open = all.Where(item => item.IsOpen).OrderByDescending(item => OpenMoment(item.Letter));
 
         return closed.Concat(open)
             .Select(item => new LetterListItem(
                 item.Letter.Id,
                 item.Letter.OpenDate,
+                item.Letter.OpenTime,
                 item.IsOpen,
                 item.IsOpen ? Preview(item.Letter.Text) : null))
             .ToList();
@@ -94,7 +96,7 @@ public sealed class LetterService
     {
         var letter = await letters.GetByIdAsync(id) ?? throw new DomainException("Письмо не найдено");
 
-        if (!IsOpen(letter, clock.CurrentDayKey))
+        if (!IsOpen(letter, clock.LocalNow.DateTime))
         {
             throw new DomainException("Письмо ещё закрыто");
         }
@@ -118,7 +120,7 @@ public sealed class LetterService
             .Where(letter => !letter.Notified)
             .Select(letter => new LetterNotification(
                 letter.Id,
-                new DateTimeOffset(letter.OpenDate.ToDateTime(NotificationTime), zone)))
+                new DateTimeOffset(OpenMoment(letter), zone)))
             .ToList();
     }
 
@@ -135,7 +137,9 @@ public sealed class LetterService
         await letters.SaveAsync(letter);
     }
 
-    private static bool IsOpen(Letter letter, DateOnly today) => letter.OpenDate <= today;
+    private static DateTime OpenMoment(Letter letter) => letter.OpenDate.ToDateTime(letter.OpenTime);
+
+    private static bool IsOpen(Letter letter, DateTime localNow) => OpenMoment(letter) <= localNow;
 
     private static string Preview(string text)
     {

@@ -22,6 +22,7 @@ public sealed partial class TagFormViewModel : ViewModelBase
     private string icon = "⭐";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DirectionName))]
     private int directionIndex = DirectionValues.Length - 1;
 
     public TagFormViewModel(ViewModelContext context, TagService tags)
@@ -38,6 +39,8 @@ public sealed partial class TagFormViewModel : ViewModelBase
 
     public IReadOnlyList<string> Directions { get; } = DirectionValues.Select(LifeDirectionNames.Get).ToList();
 
+    public string DirectionName => Directions[Math.Clamp(DirectionIndex, 0, Directions.Count - 1)];
+
     public bool CanSave => !string.IsNullOrWhiteSpace(Label);
 
     public override Task InitializeAsync(IReadOnlyDictionary<string, object> parameters)
@@ -50,6 +53,18 @@ public sealed partial class TagFormViewModel : ViewModelBase
 
     [RelayCommand]
     private void SelectIcon(string value) => Icon = value;
+
+    [RelayCommand]
+    private async Task PickDirectionAsync()
+    {
+        var choice = await Dialogs.ChooseAsync(Strings.TagForm_Direction, Directions);
+        var index = choice is null ? -1 : Directions.ToList().IndexOf(choice);
+
+        if (index >= 0)
+        {
+            DirectionIndex = index;
+        }
+    }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()

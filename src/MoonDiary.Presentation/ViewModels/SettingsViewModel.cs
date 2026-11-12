@@ -27,6 +27,7 @@ public sealed partial class SettingsViewModel : ViewModelBase
     private bool reminderEnabled;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ReminderTimeText))]
     private TimeSpan? reminderTime;
 
     [ObservableProperty]
@@ -54,6 +55,8 @@ public sealed partial class SettingsViewModel : ViewModelBase
         this.backup = backup;
         this.scheduler = scheduler;
     }
+
+    public string ReminderTimeText => Formatting.Ru.Time(ReminderTime ?? TimeSpan.Zero);
 
     public bool IsLight => ThemeMode == ThemeMode.Light;
 
@@ -160,6 +163,17 @@ public sealed partial class SettingsViewModel : ViewModelBase
 
         theme.Apply(value);
         _ = SaveAsync();
+    }
+
+    [RelayCommand]
+    private async Task PickReminderTimeAsync()
+    {
+        var current = TimeOnly.FromTimeSpan(ReminderTime ?? TimeSpan.Zero);
+
+        if (await Dialogs.PickTimeAsync(Strings.Settings_ReminderTime, current) is { } picked)
+        {
+            ReminderTime = picked.ToTimeSpan();
+        }
     }
 
     partial void OnReminderEnabledChanged(bool value) => _ = SaveAsync();
