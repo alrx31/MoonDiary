@@ -23,7 +23,7 @@ public sealed class AndroidNotificationService : INotificationService
     {
         var status = await Permissions.CheckStatusAsync<Permissions.PostNotifications>();
 
-        return status == PermissionStatus.Granted && NotificationManagerCompat.From(AppContext).AreNotificationsEnabled();
+        return status == PermissionStatus.Granted && NotificationManagerCompat.From(AppContext)?.AreNotificationsEnabled() == true;
     }
 
     public async Task<bool> RequestPermissionAsync()
@@ -64,7 +64,7 @@ public sealed class AndroidNotificationService : INotificationService
     {
         var manager = NotificationManagerCompat.From(context);
 
-        if (!manager.AreNotificationsEnabled())
+        if (manager is null || !manager.AreNotificationsEnabled())
         {
             return;
         }
@@ -80,14 +80,16 @@ public sealed class AndroidNotificationService : INotificationService
             id,
             open,
             PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
-        var notification = new NotificationCompat.Builder(context, channel)
-            .SetSmallIcon(Resource.Mipmap.appicon)
-            .SetContentTitle(title)
-            .SetContentText(text)
-            .SetAutoCancel(true)
-            .SetContentIntent(content)
-            .SetPriority(NotificationCompat.PriorityDefault)
-            .Build();
+        var builder = new NotificationCompat.Builder(context, channel);
+
+        builder.SetSmallIcon(Resource.Mipmap.appicon);
+        builder.SetContentTitle(title);
+        builder.SetContentText(text);
+        builder.SetAutoCancel(true);
+        builder.SetContentIntent(content);
+        builder.SetPriority(NotificationCompat.PriorityDefault);
+
+        var notification = builder.Build();
 
         if (notification is not null)
         {

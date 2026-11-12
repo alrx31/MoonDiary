@@ -52,6 +52,8 @@ public class ReportTests
     {
         using var early = TestApp.At(2026, 11, 16, 3, 59);
         using var late = TestApp.At(2026, 11, 16, 4, 0);
+        await early.EveningAsync(Dates.D(2026, 11, 5), 3, 3);
+        await late.EveningAsync(Dates.D(2026, 11, 12), 3, 3);
 
         Assert.Equal(Dates.D(2026, 11, 2), (await early.ReportService.EnsureLastWeekReportAsync())!.WeekStart);
         Assert.Equal(Dates.D(2026, 11, 9), (await late.ReportService.EnsureLastWeekReportAsync())!.WeekStart);
@@ -80,6 +82,8 @@ public class ReportTests
     public async Task Ensure_AfterMissedWeeks_BuildsOnlyLastWeek()
     {
         using var app = TestApp.At(2026, 11, 30, 9, 0);
+        await app.EveningAsync(Dates.D(2026, 11, 10), 3, 3);
+        await app.EveningAsync(Dates.D(2026, 11, 25), 3, 3);
 
         await app.ReportService.EnsureLastWeekReportAsync();
 
@@ -87,9 +91,19 @@ public class ReportTests
     }
 
     [Fact]
+    public async Task Ensure_WeekWithoutEntries_BuildsNothing()
+    {
+        using var app = TestApp.At(2026, 11, 16, 9, 0);
+
+        Assert.Null(await app.ReportService.EnsureLastWeekReportAsync());
+        Assert.Empty(await app.ReportService.GetHistoryAsync());
+    }
+
+    [Fact]
     public async Task MarkShown_ClearsUnshownReport()
     {
         using var app = TestApp.At(2026, 11, 16, 9, 0);
+        await app.EveningAsync(Dates.D(2026, 11, 12), 3, 3);
         var report = await app.ReportService.EnsureLastWeekReportAsync();
 
         Assert.Equal(report!.Id, await app.ReportService.GetUnshownIdAsync());

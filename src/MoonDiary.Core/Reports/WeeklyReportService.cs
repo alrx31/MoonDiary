@@ -34,6 +34,12 @@ public sealed class WeeklyReportService
         }
 
         var input = await inputBuilder.BuildAsync(weekStart);
+
+        if (input.Week.All(day => day.Mood is null))
+        {
+            return null;
+        }
+
         var excluded = await reports.GetRuleIdsWithFeedbackSinceAsync(
             AdviceFeedback.NotRelevant,
             weekStart.AddDays(-7 * options.AdviceNotRelevantWeeks));
