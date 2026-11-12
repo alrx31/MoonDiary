@@ -12,7 +12,7 @@
       <Button Text="✕"
               Style="{StaticResource IconButton}"
               Command="{Binding CloseCommand}"
-              SemanticProperties.Description="{x:Static p:Strings.Common_Back}"
+              SemanticProperties.Description="{x:Static p:Strings.Common_Close}"
               AutomationId="TagFormCloseButton" />
       <Label Grid.Column="1" Text="{x:Static p:Strings.TagForm_Title}" Style="{StaticResource TitleLabel}" HorizontalTextAlignment="Center" VerticalOptions="Center" />
     </Grid>

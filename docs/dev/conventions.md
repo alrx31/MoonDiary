@@ -46,9 +46,11 @@
 ## Интерфейс
 
 - Страница наследует `ViewModelPage`, логика — только во ViewModel из Presentation.
+- Сервисы, хранилища, страницы и ViewModel регистрируются явно в `MauiProgram.cs`.
+- Цвета для рисуемых компонентов (`CalendarView`, `MoodScaleView`, `DynamicsChartView`) берутся через `Services/Palette.cs`, он читает те же ресурсы `Resources/Styles/Colors.xaml`.
 - Цвета, размеры шрифтов, отступы и радиусы — только ресурсы дизайн-системы из `Resources/Styles/`. HEX-цвета и числовые `FontSize`, `Padding`, `Margin`, `Spacing` в XAML страниц запрещены.
 - Экран собирается из компонентов `Controls/` (`ScreenHeader`, `Card`, `ListRow`, `EmptyState`, `Chip`, `MoodScaleView` и т. д.). Новый общий элемент сначала добавляется в компоненты и на витрину компонентов.
-- Тексты интерфейса — в `src/MoonDiary.Presentation/Resources/Strings.resx`, ключ `<Экран>_<Элемент>` (`Wizard_Save`). В XAML — через `x:Static`.
+- Тексты интерфейса — константы класса `src/MoonDiary.Presentation/Strings.cs`, имя `<Экран>_<Элемент>` (`Wizard_Save`). В XAML — через `x:Static`.
 - `AutomationId` есть у каждого элемента, который нажимает или проверяет тест: PascalCase на английском, с префиксом экрана (`WizardSaveButton`). Опубликованный `AutomationId` не переименовывать.
 - Нажимаемая область не меньше 44×44.
 - Элементам с текстом не задавать фиксированную высоту, чтобы работал системный масштаб шрифта.
