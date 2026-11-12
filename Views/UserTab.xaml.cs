@@ -2,11 +2,11 @@ using MoonDiary.Presentation.ViewModels;
 
 namespace MoonDiary.Views;
 
-public partial class UserPage : ViewModelPage
+public partial class UserTab : TabView
 {
     private readonly UserViewModel viewModel;
 
-    public UserPage(UserViewModel viewModel)
+    public UserTab(UserViewModel viewModel)
         : base(viewModel)
     {
         this.viewModel = viewModel;

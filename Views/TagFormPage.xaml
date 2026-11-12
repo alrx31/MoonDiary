@@ -35,9 +35,7 @@
           </BindableLayout.ItemTemplate>
         </FlexLayout>
         <Label Text="{x:Static p:Strings.TagForm_Direction}" Style="{StaticResource SectionLabel}" />
-        <Border Style="{StaticResource Card}">
-          <Picker ItemsSource="{Binding Directions}" SelectedIndex="{Binding DirectionIndex}" AutomationId="TagFormDirectionPicker" />
-        </Border>
+        <c:ListRow Text="{Binding DirectionName}" Command="{Binding PickDirectionCommand}" AutomationId="TagFormDirectionPicker" />
       </VerticalStackLayout>
     </ScrollView>
     <Button Grid.Row="2"

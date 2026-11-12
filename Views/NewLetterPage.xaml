@@ -30,13 +30,49 @@
         <Label Grid.Row="1" Text="{Binding Counter}" Style="{StaticResource SecondaryLabel}" IsVisible="{Binding ShowCounter}" HorizontalTextAlignment="End" />
       </Grid>
     </Border>
-    <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource SpaceM}">
-      <Label Text="{x:Static p:Strings.NewLetter_Open}" VerticalOptions="Center" />
-      <DatePicker Grid.Column="1"
-                  Date="{Binding OpenDate}"
-                  MinimumDate="{Binding MinDate}"
-                  Format="d MMMM yyyy"
-                  AutomationId="NewLetterDatePicker" />
-    </Grid>
+    <VerticalStackLayout Grid.Row="2" Spacing="{StaticResource SpaceS}">
+      <Label Text="{x:Static p:Strings.NewLetter_Open}" Style="{StaticResource SecondaryLabel}" />
+      <FlexLayout BindableLayout.ItemsSource="{Binding Presets}" Wrap="Wrap">
+        <BindableLayout.ItemTemplate>
+          <DataTemplate x:DataType="vm:DayPresetViewModel">
+            <c:ToggleButton Text="{Binding Text}"
+                            IsSelected="{Binding IsSelected}"
+                            Margin="{StaticResource ChipMargin}"
+                            AutomationId="{Binding AutomationId}"
+                            Command="{Binding SelectPresetCommand, Source={RelativeSource AncestorType={x:Type vm:NewLetterViewModel}}, x:DataType=vm:NewLetterViewModel}"
+                            CommandParameter="{Binding .}" />
+          </DataTemplate>
+        </BindableLayout.ItemTemplate>
+      </FlexLayout>
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{StaticResource SpaceS}">
+        <Button Text="−"
+                Style="{StaticResource StepButton}"
+                Command="{Binding DecreaseCommand}"
+                SemanticProperties.Description="{x:Static p:Strings.NewLetter_Less}"
+                AutomationId="NewLetterDaysMinus" />
+        <Label Grid.Column="1"
+               Text="{Binding DaysText}"
+               Style="{StaticResource TitleLabel}"
+               HorizontalTextAlignment="Center"
+               VerticalOptions="Center"
+               AutomationId="NewLetterDaysLabel" />
+        <Button Grid.Column="2"
+                Text="+"
+                Style="{StaticResource StepButton}"
+                Command="{Binding IncreaseCommand}"
+                SemanticProperties.Description="{x:Static p:Strings.NewLetter_More}"
+                AutomationId="NewLetterDaysPlus" />
+        <Button Grid.Column="3"
+                Text="{Binding TimeText}"
+                Style="{StaticResource SecondaryButton}"
+                Command="{Binding PickTimeCommand}"
+                SemanticProperties.Description="{x:Static p:Strings.NewLetter_Time}"
+                AutomationId="NewLetterTimeButton" />
+      </Grid>
+      <Label Text="{Binding OpenText}"
+             Style="{StaticResource SecondaryLabel}"
+             HorizontalTextAlignment="Center"
+             AutomationId="NewLetterOpenLabel" />
+    </VerticalStackLayout>
   </Grid>
 </views:ViewModelPage>

@@ -41,7 +41,8 @@ public sealed class AndroidNotificationService : INotificationService
         Schedule(intent, ReminderNotificationId, at);
     }
 
-    public void ScheduleLetter(Guid letterId, DateTimeOffset at) => Schedule(LetterIntent(letterId), RequestCode(letterId), at);
+    public void ScheduleLetter(Guid letterId, DateTimeOffset at) =>
+        Schedule(LetterIntent(letterId), RequestCode(letterId), at, exact: true);
 
     public void CancelLetter(Guid letterId) => Schedule(LetterIntent(letterId), RequestCode(letterId), null);
 
@@ -106,7 +107,7 @@ public sealed class AndroidNotificationService : INotificationService
         return intent;
     }
 
-    private static void Schedule(Intent intent, int requestCode, DateTimeOffset? at)
+    private static void Schedule(Intent intent, int requestCode, DateTimeOffset? at, bool exact = false)
     {
         var pending = PendingIntent.GetBroadcast(
             AppContext,
@@ -121,11 +122,25 @@ public sealed class AndroidNotificationService : INotificationService
 
         alarms.Cancel(pending);
 
-        if (at is { } moment)
+        if (at is not { } moment)
         {
-            alarms.SetWindow(AlarmType.RtcWakeup, moment.ToUnixTimeMilliseconds(), WindowMillis, pending);
+            return;
+        }
+
+        var millis = moment.ToUnixTimeMilliseconds();
+
+        if (exact && OperatingSystem.IsAndroidVersionAtLeast(23) && CanScheduleExact(alarms))
+        {
+            alarms.SetExactAndAllowWhileIdle(AlarmType.RtcWakeup, millis, pending);
+        }
+        else
+        {
+            alarms.SetWindow(AlarmType.RtcWakeup, millis, WindowMillis, pending);
         }
     }
+
+    private static bool CanScheduleExact(AlarmManager alarms) =>
+        !OperatingSystem.IsAndroidVersionAtLeast(31) || alarms.CanScheduleExactAlarms();
 
     private static void EnsureChannels(Context context)
     {

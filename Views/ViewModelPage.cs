@@ -2,7 +2,7 @@ using MoonDiary.Presentation.ViewModels;
 
 namespace MoonDiary.Views;
 
-public abstract class ViewModelPage : ContentPage, IQueryAttributable
+public abstract class ViewModelPage : AppPage, IQueryAttributable
 {
     private readonly ViewModelBase viewModel;
     private IReadOnlyDictionary<string, object> parameters = new Dictionary<string, object>();
@@ -12,8 +12,6 @@ public abstract class ViewModelPage : ContentPage, IQueryAttributable
     {
         this.viewModel = viewModel;
         BindingContext = viewModel;
-        Shell.SetNavBarIsVisible(this, false);
-        Shell.SetTabBarIsVisible(this, false);
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)

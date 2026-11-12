@@ -8,7 +8,6 @@
   <x:Double x:Key="FontTitle">20</x:Double>
   <x:Double x:Key="FontBody">16</x:Double>
   <x:Double x:Key="FontCaption">13</x:Double>
-  <x:Double x:Key="FontTab">11</x:Double>
 
   <x:Double x:Key="SpaceXs">4</x:Double>
   <x:Double x:Key="SpaceS">8</x:Double>
@@ -24,7 +23,6 @@
   <Thickness x:Key="ChipMargin">0,0,8,8</Thickness>
   <Thickness x:Key="RowPadding">4,12</Thickness>
   <Thickness x:Key="SectionMargin">0,16,0,8</Thickness>
-  <Thickness x:Key="BarPadding">4,6,4,8</Thickness>
 
   <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
     <Setter Property="BackgroundColor"
@@ -146,6 +144,13 @@
             Value="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
   </Style>
 
+  <Style x:Key="StepButton" TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+    <Setter Property="FontSize" Value="{StaticResource FontTitle}" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="WidthRequest" Value="{StaticResource TouchSize}" />
+    <Setter Property="HeightRequest" Value="{StaticResource TouchSize}" />
+  </Style>
+
   <Style x:Key="TextButton" TargetType="Button">
     <Setter Property="FontFamily" Value="OpenSansSemibold" />
     <Setter Property="FontSize" Value="{StaticResource FontBody}" />
@@ -179,17 +184,6 @@
   <Style x:Key="DestructiveButton" TargetType="Button" BasedOn="{StaticResource TextButton}">
     <Setter Property="TextColor"
             Value="{AppThemeBinding Light={StaticResource LightDestructive}, Dark={StaticResource DarkDestructive}}" />
-  </Style>
-
-  <Style x:Key="TabButton" TargetType="Button">
-    <Setter Property="FontFamily" Value="OpenSansRegular" />
-    <Setter Property="FontSize" Value="{StaticResource FontTab}" />
-    <Setter Property="BackgroundColor" Value="Transparent" />
-    <Setter Property="Padding" Value="0" />
-    <Setter Property="LineBreakMode" Value="NoWrap" />
-    <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchSize}" />
-    <Setter Property="TextColor"
-            Value="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
   </Style>
 
   <Style x:Key="FillButton" TargetType="Button">
@@ -251,32 +245,6 @@
     <Setter Property="TextColor"
             Value="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
     <Setter Property="PlaceholderColor"
-            Value="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" />
-  </Style>
-
-  <Style TargetType="DatePicker">
-    <Setter Property="FontFamily" Value="OpenSansRegular" />
-    <Setter Property="FontSize" Value="{StaticResource FontBody}" />
-    <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchSize}" />
-    <Setter Property="TextColor"
-            Value="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
-  </Style>
-
-  <Style TargetType="TimePicker">
-    <Setter Property="FontFamily" Value="OpenSansRegular" />
-    <Setter Property="FontSize" Value="{StaticResource FontBody}" />
-    <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchSize}" />
-    <Setter Property="TextColor"
-            Value="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
-  </Style>
-
-  <Style TargetType="Picker">
-    <Setter Property="FontFamily" Value="OpenSansRegular" />
-    <Setter Property="FontSize" Value="{StaticResource FontBody}" />
-    <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchSize}" />
-    <Setter Property="TextColor"
-            Value="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
-    <Setter Property="TitleColor"
             Value="{AppThemeBinding Light={StaticResource LightTextMuted}, Dark={StaticResource DarkTextMuted}}" />
   </Style>
 

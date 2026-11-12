@@ -78,6 +78,7 @@ public static class MauiProgram
 
     private static void AddPlatformServices(IServiceCollection services)
     {
+        services.AddSingleton<TabState>();
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IThemeService, ThemeService>();
@@ -103,10 +104,12 @@ public static class MauiProgram
     {
         services.AddTransient<LoadingPage>();
         AddPage<OnboardingPage, OnboardingViewModel>(services, null);
-        AddPage<CalendarPage, CalendarViewModel>(services, null);
-        AddPage<AnalyticsPage, AnalyticsViewModel>(services, null);
-        AddPage<LettersPage, LettersViewModel>(services, null);
-        AddPage<UserPage, UserViewModel>(services, null);
+        services.AddTransient<HomePage>();
+        services.AddTransient<Controls.BottomBar>();
+        AddView<CalendarTab, CalendarViewModel>(services);
+        AddView<AnalyticsTab, AnalyticsViewModel>(services);
+        AddView<LettersTab, LettersViewModel>(services);
+        AddView<UserTab, UserViewModel>(services);
         AddPage<DatabaseErrorPage, DatabaseErrorViewModel>(services, null);
         AddPage<WizardPage, WizardViewModel>(services, Routes.Wizard);
         AddPage<SummaryPage, SummaryViewModel>(services, Routes.WizardSummary);
@@ -120,6 +123,14 @@ public static class MauiProgram
         AddPage<SettingsPage, SettingsViewModel>(services, Routes.Settings);
         AddPage<LetterPage, LetterViewModel>(services, Routes.Letter);
         AddPage<NewLetterPage, NewLetterViewModel>(services, Routes.NewLetter);
+    }
+
+    private static void AddView<TView, TViewModel>(IServiceCollection services)
+        where TView : TabView
+        where TViewModel : class
+    {
+        services.AddTransient<TView>();
+        services.AddTransient<TViewModel>();
     }
 
     private static void AddPage<TPage, TViewModel>(IServiceCollection services, string? route)

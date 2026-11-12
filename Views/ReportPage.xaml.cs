@@ -13,7 +13,7 @@ public partial class ReportPage : ViewModelPage
         InitializeComponent();
     }
 
-    protected override bool OnBackButtonPressed()
+    protected override bool OnBack()
     {
         viewModel.CloseCommand.Execute(null);
 

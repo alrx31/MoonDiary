@@ -33,7 +33,7 @@
             </Grid>
             <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ReminderEnabled}">
               <Label Text="{x:Static p:Strings.Settings_ReminderTime}" VerticalOptions="Center" />
-              <TimePicker Grid.Column="1" Time="{Binding ReminderTime}" Format="HH:mm" AutomationId="SettingsReminderTime" />
+              <Button Grid.Column="1" Text="{Binding ReminderTimeText}" Style="{StaticResource SecondaryButton}" Command="{Binding PickReminderTimeCommand}" AutomationId="SettingsReminderTime" />
             </Grid>
             <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ReminderEnabled}">
               <Label Text="{x:Static p:Strings.Settings_Adaptive}" VerticalOptions="Center" />

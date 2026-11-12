@@ -26,15 +26,33 @@ public static class Palette
 
     public static Color OnAccent => Get("OnAccent");
 
+    public static Color Destructive => Get("Destructive");
+
+    public static void Bind(BindableObject target, BindableProperty property, string name) =>
+        target.SetAppThemeColor(property, Named("Light" + name), Named("Dark" + name));
+
+    public static void BindBrush(BindableObject target, BindableProperty property, string name) =>
+        target.SetAppTheme<Brush>(
+            property,
+            new SolidColorBrush(Named("Light" + name)),
+            new SolidColorBrush(Named("Dark" + name)));
+
+    public static Style Style(string key) =>
+        Application.Current is not null
+        && Application.Current.Resources.TryGetValue(key, out var value)
+        && value is Style style
+            ? style
+            : new Style(typeof(View));
+
     public static Color Level(MoodScale scale, int value) =>
         Get((scale == MoodScale.Energy ? "Energy" : "Positivity") + Math.Clamp(value, 1, 5));
 
     public static Color Accent(MoodScale scale) => scale == MoodScale.Energy ? Energy : Positivity;
 
-    private static Color Get(string name)
-    {
-        var key = (IsDark ? "Dark" : "Light") + name;
+    private static Color Get(string name) => Named((IsDark ? "Dark" : "Light") + name);
 
+    private static Color Named(string key)
+    {
         return Application.Current is not null
                && Application.Current.Resources.TryGetValue(key, out var value)
                && value is Color color

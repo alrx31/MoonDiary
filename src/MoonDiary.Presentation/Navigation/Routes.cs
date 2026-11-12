@@ -3,10 +3,7 @@ namespace MoonDiary.Presentation.Navigation;
 public static class Routes
 {
     public const string Loading = "loading";
-    public const string Calendar = "calendar";
-    public const string Analytics = "analytics";
-    public const string Letters = "letters";
-    public const string User = "user";
+    public const string Home = "home";
     public const string Onboarding = "onboarding";
     public const string Wizard = "wizard";
     public const string WizardSummary = "wizardSummary";

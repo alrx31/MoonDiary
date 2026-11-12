@@ -14,7 +14,7 @@ public partial class SummaryPage : ViewModelPage
         viewModel.AutoClose = () => MainThread.BeginInvokeOnMainThread(() => viewModel.DoneCommand.Execute(null));
     }
 
-    protected override bool OnBackButtonPressed()
+    protected override bool OnBack()
     {
         viewModel.DoneCommand.Execute(null);
 

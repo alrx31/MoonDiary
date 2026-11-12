@@ -25,10 +25,13 @@ public sealed class CalendarView : GraphicsView, IDrawable
     private const float HeaderHeight = 28;
     private const float CellHeight = 58;
     private const float SwipeDistance = 60;
+    private const double SlideShare = 0.22;
 
     private PointF? start;
+    private IReadOnlyList<CalendarDay>? shown;
     private int offset;
     private int rows = 5;
+    private int slideVersion;
 
     public CalendarView()
     {
@@ -78,14 +81,14 @@ public sealed class CalendarView : GraphicsView, IDrawable
                 HorizontalAlignment.Center, VerticalAlignment.Center);
         }
 
-        if (Days is null)
+        if (shown is null)
         {
             return;
         }
 
-        for (var index = 0; index < Days.Count; index++)
+        for (var index = 0; index < shown.Count; index++)
         {
-            var day = Days[index];
+            var day = shown[index];
             var cell = index + offset;
             var left = (cell % 7) * cellWidth;
             var top = HeaderHeight + ((cell / 7) * CellHeight);
@@ -166,14 +169,54 @@ public sealed class CalendarView : GraphicsView, IDrawable
 
     private void OnDaysChanged()
     {
-        if (Days is { Count: > 0 })
+        var next = Days;
+
+        if (shown is { Count: > 0 } && next is { Count: > 0 } && Width > 0 && !SameMonth(shown[0].Date, next[0].Date))
         {
-            offset = ((int)Days[0].Date.DayOfWeek + 6) % 7;
-            rows = (int)Math.Ceiling((offset + Days.Count) / 7.0);
+            _ = SlideAsync(next, next[0].Date > shown[0].Date ? -1 : 1);
+        }
+        else
+        {
+            Apply(next);
+        }
+    }
+
+    private static bool SameMonth(DateOnly left, DateOnly right) => left.Year == right.Year && left.Month == right.Month;
+
+    private void Apply(IReadOnlyList<CalendarDay>? days)
+    {
+        shown = days;
+
+        if (days is { Count: > 0 })
+        {
+            offset = ((int)days[0].Date.DayOfWeek + 6) % 7;
+            rows = (int)Math.Ceiling((offset + days.Count) / 7.0);
             HeightRequest = HeaderHeight + (CellHeight * rows);
         }
 
         Invalidate();
+    }
+
+    private async Task SlideAsync(IReadOnlyList<CalendarDay> days, int direction)
+    {
+        var version = ++slideVersion;
+        var shift = Width * SlideShare;
+
+        this.CancelAnimations();
+        await Task.WhenAll(
+            this.TranslateToAsync(direction * shift, 0, 120, Easing.CubicIn),
+            this.FadeToAsync(0, 120, Easing.CubicIn));
+
+        if (version != slideVersion)
+        {
+            return;
+        }
+
+        Apply(days);
+        TranslationX = -direction * shift;
+        await Task.WhenAll(
+            this.TranslateToAsync(0, 0, 220, Easing.CubicOut),
+            this.FadeToAsync(1, 220, Easing.CubicOut));
     }
 
     private void OnEndInteraction(object? sender, TouchEventArgs args)
@@ -201,7 +244,7 @@ public sealed class CalendarView : GraphicsView, IDrawable
             return;
         }
 
-        if (Days is null || Width <= 0 || end.Y < HeaderHeight)
+        if (shown is null || Width <= 0 || end.Y < HeaderHeight)
         {
             return;
         }
@@ -210,9 +253,9 @@ public sealed class CalendarView : GraphicsView, IDrawable
         var row = (int)((end.Y - HeaderHeight) / CellHeight);
         var index = (row * 7) + column - offset;
 
-        if (index >= 0 && index < Days.Count && DayTappedCommand?.CanExecute(Days[index].Date) == true)
+        if (index >= 0 && index < shown.Count && DayTappedCommand?.CanExecute(shown[index].Date) == true)
         {
-            DayTappedCommand.Execute(Days[index].Date);
+            DayTappedCommand.Execute(shown[index].Date);
         }
     }
 }

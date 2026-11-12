@@ -22,7 +22,7 @@ public static class Strings
     public const string Tab_Analytics = "Аналитика";
     public const string Tab_Fill = "Заполнить";
     public const string Tab_Letters = "Письма";
-    public const string Tab_User = "Пользователь";
+    public const string Tab_User = "Профиль";
 
     public const string Onboarding_Text = "Каждый вечер — короткая запись о дне. Раз в неделю — отчёт.";
     public const string Onboarding_Question = "Напоминать в 18:00?";

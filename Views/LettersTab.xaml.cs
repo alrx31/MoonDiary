@@ -2,9 +2,9 @@ using MoonDiary.Presentation.ViewModels;
 
 namespace MoonDiary.Views;
 
-public partial class AnalyticsPage : ViewModelPage
+public partial class LettersTab : TabView
 {
-    public AnalyticsPage(AnalyticsViewModel viewModel)
+    public LettersTab(LettersViewModel viewModel)
         : base(viewModel)
     {
         InitializeComponent();

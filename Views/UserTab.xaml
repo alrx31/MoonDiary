@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:TabView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:views="clr-namespace:MoonDiary.Views"
+               xmlns:c="clr-namespace:MoonDiary.Controls"
+               xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+               xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+               x:Class="MoonDiary.Views.UserTab"
+               x:DataType="vm:UserViewModel">
+  <ScrollView>
+    <VerticalStackLayout Padding="{StaticResource PagePadding}" Spacing="{StaticResource SpaceS}">
+      <Label Text="{x:Static p:Strings.Tab_User}" Style="{StaticResource TitleLabel}" />
+      <Label Text="{x:Static p:Strings.User_Name}" Style="{StaticResource SectionLabel}" />
+      <Border Style="{StaticResource Card}">
+        <Entry x:Name="NameEntry"
+               Text="{Binding UserName}"
+               Placeholder="{x:Static p:Strings.User_NamePlaceholder}"
+               MaxLength="40"
+               ReturnType="Done"
+               Unfocused="OnNameUnfocused"
+               Completed="OnNameCompleted"
+               AutomationId="UserNameEntry" />
+      </Border>
+      <BoxView Style="{StaticResource Divider}" Margin="{StaticResource SectionMargin}" />
+      <c:ListRow Text="{Binding DraftsTitle}" Command="{Binding OpenDraftsCommand}" AutomationId="UserDraftsRow" />
+      <c:ListRow Text="{x:Static p:Strings.User_Tags}" Command="{Binding OpenTagsCommand}" AutomationId="UserTagsRow" />
+      <c:ListRow Text="{x:Static p:Strings.User_Settings}" Command="{Binding OpenSettingsCommand}" AutomationId="UserSettingsRow" />
+      <BoxView Style="{StaticResource Divider}" Margin="{StaticResource SectionMargin}" />
+      <Label Text="{Binding Streak}" Style="{StaticResource EnergyLabel}" AutomationId="UserStreakLabel" />
+    </VerticalStackLayout>
+  </ScrollView>
+</views:TabView>

@@ -9,9 +9,6 @@
                      x:Class="MoonDiary.Views.WizardPage"
                      x:DataType="vm:WizardViewModel">
   <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="{StaticResource PagePadding}" RowSpacing="{StaticResource SpaceM}">
-    <Grid.GestureRecognizers>
-      <SwipeGestureRecognizer Direction="Right" Command="{Binding SkipCommand}" />
-    </Grid.GestureRecognizers>
     <Grid ColumnDefinitions="Auto,*,Auto">
       <Button Text="✕"
               Style="{StaticResource IconButton}"
@@ -83,14 +80,19 @@
               </DataTemplate>
             </BindableLayout.ItemTemplate>
           </FlexLayout>
-          <Label Text="{x:Static p:Strings.Wizard_SkipHint}" Style="{StaticResource SecondaryLabel}" HorizontalTextAlignment="Center" />
         </VerticalStackLayout>
       </Grid>
     </ScrollView>
-    <Button Grid.Row="3"
-            Text="{x:Static p:Strings.Wizard_Continue}"
-            Style="{StaticResource PrimaryButton}"
-            Command="{Binding ContinueCommand}"
-            AutomationId="WizardContinueButton" />
+    <VerticalStackLayout Grid.Row="3" Spacing="{StaticResource SpaceS}">
+      <c:SlideButton Text="{x:Static p:Strings.Wizard_SkipHint}"
+                     IsVisible="{Binding IsTextStep}"
+                     Command="{Binding SkipCommand}"
+                     SemanticProperties.Description="{x:Static p:Strings.Wizard_SkipHint}"
+                     AutomationId="WizardSkipSlider" />
+      <Button Text="{x:Static p:Strings.Wizard_Continue}"
+              Style="{StaticResource PrimaryButton}"
+              Command="{Binding ContinueCommand}"
+              AutomationId="WizardContinueButton" />
+    </VerticalStackLayout>
   </Grid>
 </views:ViewModelPage>

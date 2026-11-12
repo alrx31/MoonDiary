@@ -13,7 +13,7 @@ public partial class WizardPage : ViewModelPage
         InitializeComponent();
     }
 
-    protected override bool OnBackButtonPressed()
+    protected override bool OnBack()
     {
         viewModel.BackCommand.Execute(null);
 

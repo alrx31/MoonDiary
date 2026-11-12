@@ -9,9 +9,6 @@
   <ShellContent Route="loading" ContentTemplate="{DataTemplate views:LoadingPage}" />
   <ShellContent Route="onboarding" ContentTemplate="{DataTemplate views:OnboardingPage}" />
   <ShellContent Route="databaseError" ContentTemplate="{DataTemplate views:DatabaseErrorPage}" />
-  <ShellContent Route="calendar" ContentTemplate="{DataTemplate views:CalendarPage}" />
-  <ShellContent Route="analytics" ContentTemplate="{DataTemplate views:AnalyticsPage}" />
-  <ShellContent Route="letters" ContentTemplate="{DataTemplate views:LettersPage}" />
-  <ShellContent Route="user" ContentTemplate="{DataTemplate views:UserPage}" />
+  <ShellContent Route="home" ContentTemplate="{DataTemplate views:HomePage}" />
 
 </Shell>
