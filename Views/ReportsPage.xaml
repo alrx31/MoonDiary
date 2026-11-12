@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     x:Class="MoonDiary.Views.ReportsPage"
+                     x:DataType="vm:ReportsViewModel">
+  <Grid RowDefinitions="Auto,*" Padding="{StaticResource PagePadding}" RowSpacing="{StaticResource SpaceS}">
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <Button Text="‹"
+              Style="{StaticResource IconButton}"
+              Command="{Binding BackCommand}"
+              SemanticProperties.Description="{x:Static p:Strings.Common_Back}"
+              AutomationId="ReportsBackButton" />
+      <Label Grid.Column="1" Text="{x:Static p:Strings.Reports_Title}" Style="{StaticResource TitleLabel}" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+    </Grid>
+    <ScrollView Grid.Row="1">
+      <VerticalStackLayout>
+        <Label Text="{x:Static p:Strings.Reports_Empty}" Style="{StaticResource EmptyLabel}" IsVisible="{Binding IsEmpty}" AutomationId="ReportsEmptyLabel" />
+        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" AutomationId="ReportsList">
+          <BindableLayout.ItemTemplate>
+            <DataTemplate x:DataType="vm:ReportRowViewModel">
+              <c:ListRow Text="{Binding Text}"
+                         Command="{Binding OpenCommand, Source={RelativeSource AncestorType={x:Type vm:ReportsViewModel}}, x:DataType=vm:ReportsViewModel}"
+                         CommandParameter="{Binding .}" />
+            </DataTemplate>
+          </BindableLayout.ItemTemplate>
+        </VerticalStackLayout>
+      </VerticalStackLayout>
+    </ScrollView>
+  </Grid>
+</views:ViewModelPage>

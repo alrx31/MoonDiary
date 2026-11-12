@@ -1,0 +1,31 @@
+name: Unit tests
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main, dev]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Run unit tests
+        run: >
+          dotnet test tests/MoonDiary.Tests
+          --logger "trx;LogFileName=unit.trx"
+          --results-directory TestResults/Unit
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-tests-trx
+          path: TestResults/Unit

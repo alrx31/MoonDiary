@@ -1,0 +1,28 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+
+[*.cs]
+indent_size = 4
+tab_width = 4
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+
+[tests/**/*.cs]
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1861.severity = none
+
+[*.{xaml,csproj,props,json,yml}]
+indent_size = 2
+
+[src/MoonDiary.Presentation/Strings.cs]
+dotnet_diagnostic.CA1707.severity = none
+
+[src/MoonDiary.Presentation/**.cs]
+dotnet_diagnostic.CA1863.severity = none

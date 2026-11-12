@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+  <Color x:Key="DarkBackground">#14161C</Color>
+  <Color x:Key="DarkSurface">#1E2129</Color>
+  <Color x:Key="DarkSurfaceRaised">#262A34</Color>
+  <Color x:Key="DarkBorder">#2E323D</Color>
+  <Color x:Key="DarkTextPrimary">#EDEAE2</Color>
+  <Color x:Key="DarkTextSecondary">#A9ADB8</Color>
+  <Color x:Key="DarkTextMuted">#6B6E78</Color>
+  <Color x:Key="DarkEnergy">#E0B34C</Color>
+  <Color x:Key="DarkPositivity">#7FA8A0</Color>
+  <Color x:Key="DarkDestructive">#C96F5A</Color>
+  <Color x:Key="DarkOnAccent">#14161C</Color>
+
+  <Color x:Key="DarkEnergy1">#3A3220</Color>
+  <Color x:Key="DarkEnergy2">#6B5A2E</Color>
+  <Color x:Key="DarkEnergy3">#A08038</Color>
+  <Color x:Key="DarkEnergy4">#C79B40</Color>
+  <Color x:Key="DarkEnergy5">#E0B34C</Color>
+  <Color x:Key="DarkPositivity1">#2A3A38</Color>
+  <Color x:Key="DarkPositivity2">#3E5552</Color>
+  <Color x:Key="DarkPositivity3">#56706C</Color>
+  <Color x:Key="DarkPositivity4">#6E8C87</Color>
+  <Color x:Key="DarkPositivity5">#7FA8A0</Color>
+
+  <Color x:Key="LightBackground">#F6F3EC</Color>
+  <Color x:Key="LightSurface">#FFFFFF</Color>
+  <Color x:Key="LightSurfaceRaised">#FBF9F4</Color>
+  <Color x:Key="LightBorder">#E2DDD1</Color>
+  <Color x:Key="LightTextPrimary">#23252B</Color>
+  <Color x:Key="LightTextSecondary">#5C606B</Color>
+  <Color x:Key="LightTextMuted">#9A9CA5</Color>
+  <Color x:Key="LightEnergy">#B8862B</Color>
+  <Color x:Key="LightPositivity">#4F7F77</Color>
+  <Color x:Key="LightDestructive">#B5533D</Color>
+  <Color x:Key="LightOnAccent">#FFFFFF</Color>
+
+  <Color x:Key="LightEnergy1">#EADFC4</Color>
+  <Color x:Key="LightEnergy2">#DCC690</Color>
+  <Color x:Key="LightEnergy3">#CBA95A</Color>
+  <Color x:Key="LightEnergy4">#BD9238</Color>
+  <Color x:Key="LightEnergy5">#A87B1F</Color>
+  <Color x:Key="LightPositivity1">#D5E2DF</Color>
+  <Color x:Key="LightPositivity2">#B3CCC7</Color>
+  <Color x:Key="LightPositivity3">#8DB1AA</Color>
+  <Color x:Key="LightPositivity4">#6A968E</Color>
+  <Color x:Key="LightPositivity5">#4F7F77</Color>
+
+</ResourceDictionary>

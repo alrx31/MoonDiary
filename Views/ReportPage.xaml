@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     x:Class="MoonDiary.Views.ReportPage"
+                     x:DataType="vm:ReportViewModel">
+  <Grid RowDefinitions="Auto,*" Padding="{StaticResource PagePadding}" RowSpacing="{StaticResource SpaceS}">
+    <Grid ColumnDefinitions="*,Auto">
+      <Label Text="{Binding Title}" Style="{StaticResource TitleLabel}" VerticalOptions="Center" AutomationId="ReportTitle" />
+      <Button Grid.Column="1"
+              Text="{x:Static p:Strings.Common_Close}"
+              Style="{StaticResource TextButton}"
+              Command="{Binding CloseCommand}"
+              AutomationId="ReportCloseButton" />
+    </Grid>
+    <ScrollView Grid.Row="1">
+      <VerticalStackLayout Spacing="{StaticResource SpaceS}">
+        <Label Text="{x:Static p:Strings.Report_Summary}" Style="{StaticResource SectionLabel}" />
+        <Border Style="{StaticResource Card}" AutomationId="ReportSummary">
+          <VerticalStackLayout Spacing="{StaticResource SpaceS}">
+          <VerticalStackLayout BindableLayout.ItemsSource="{Binding Summary}" Spacing="{StaticResource SpaceXs}">
+            <BindableLayout.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <Label Text="{Binding .}" />
+              </DataTemplate>
+            </BindableLayout.ItemTemplate>
+          </VerticalStackLayout>
+            <Label Text="{x:Static p:Strings.Report_Insufficient}" Style="{StaticResource SecondaryLabel}" IsVisible="{Binding IsInsufficient}" AutomationId="ReportInsufficientLabel" />
+          </VerticalStackLayout>
+        </Border>
+        <VerticalStackLayout IsVisible="{Binding IsFull}" Spacing="{StaticResource SpaceS}">
+          <Label Text="{x:Static p:Strings.Report_Achievements}" Style="{StaticResource SectionLabel}" />
+          <Border Style="{StaticResource Card}" AutomationId="ReportAchievements">
+          <VerticalStackLayout BindableLayout.ItemsSource="{Binding Achievements}" Spacing="{StaticResource SpaceXs}">
+            <BindableLayout.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <Label Text="{Binding .}" />
+              </DataTemplate>
+            </BindableLayout.ItemTemplate>
+          </VerticalStackLayout>
+          </Border>
+          <Label Text="{x:Static p:Strings.Report_Patterns}" Style="{StaticResource SectionLabel}" />
+          <Border Style="{StaticResource Card}" AutomationId="ReportPatterns">
+          <VerticalStackLayout BindableLayout.ItemsSource="{Binding Patterns}" Spacing="{StaticResource SpaceXs}">
+            <BindableLayout.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <Label Text="{Binding .}" />
+              </DataTemplate>
+            </BindableLayout.ItemTemplate>
+          </VerticalStackLayout>
+          </Border>
+          <Label Text="{x:Static p:Strings.Report_Comparison}" Style="{StaticResource SectionLabel}" IsVisible="{Binding HasComparison}" />
+          <Border Style="{StaticResource Card}" IsVisible="{Binding HasComparison}" AutomationId="ReportComparison">
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Comparison}" Spacing="{StaticResource SpaceXs}">
+              <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="vm:ComparisonRowViewModel">
+                  <Grid ColumnDefinitions="110,24,*">
+                    <Label Text="{Binding Name}" />
+                    <Label Grid.Column="1" Text="{Binding Arrow}" Style="{StaticResource EnergyLabel}" />
+                    <Label Grid.Column="2" Text="{Binding Value}" />
+                  </Grid>
+                </DataTemplate>
+              </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+          </Border>
+          <Label Text="{x:Static p:Strings.Report_Advice}" Style="{StaticResource SectionLabel}" />
+          <Label Text="{x:Static p:Strings.Report_NoAdvice}" Style="{StaticResource MutedLabel}" IsVisible="{Binding HasNoAdvice}" />
+          <VerticalStackLayout BindableLayout.ItemsSource="{Binding Advice}" Spacing="{StaticResource SpaceS}" AutomationId="ReportAdvice">
+            <BindableLayout.ItemTemplate>
+              <DataTemplate x:DataType="vm:AdviceItemViewModel">
+                <Border Style="{StaticResource Card}">
+                  <VerticalStackLayout Spacing="{StaticResource SpaceS}">
+                    <Label Text="{Binding Direction}" Style="{StaticResource SecondaryLabel}" />
+                    <Label Text="{Binding Text}" />
+                    <HorizontalStackLayout Spacing="{StaticResource SpaceS}">
+                      <c:ToggleButton Text="{x:Static p:Strings.Report_Useful}"
+                                      IsSelected="{Binding IsUseful}"
+                                      Command="{Binding MarkUsefulCommand, Source={RelativeSource AncestorType={x:Type vm:ReportViewModel}}, x:DataType=vm:ReportViewModel}"
+                                      CommandParameter="{Binding .}" />
+                      <c:ToggleButton Text="{x:Static p:Strings.Report_NotRelevant}"
+                                      IsSelected="{Binding IsNotRelevant}"
+                                      Command="{Binding MarkNotRelevantCommand, Source={RelativeSource AncestorType={x:Type vm:ReportViewModel}}, x:DataType=vm:ReportViewModel}"
+                                      CommandParameter="{Binding .}" />
+                    </HorizontalStackLayout>
+                  </VerticalStackLayout>
+                </Border>
+              </DataTemplate>
+            </BindableLayout.ItemTemplate>
+          </VerticalStackLayout>
+        </VerticalStackLayout>
+      </VerticalStackLayout>
+    </ScrollView>
+  </Grid>
+</views:ViewModelPage>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     x:Class="MoonDiary.Views.LettersPage"
+                     x:DataType="vm:LettersViewModel">
+  <Grid RowDefinitions="*,Auto">
+    <ScrollView>
+      <VerticalStackLayout Padding="{StaticResource PagePadding}" Spacing="{StaticResource SpaceS}">
+        <Label Text="{x:Static p:Strings.Letters_Title}" Style="{StaticResource TitleLabel}" />
+        <Label Text="{x:Static p:Strings.Letters_Empty}" Style="{StaticResource EmptyLabel}" IsVisible="{Binding IsEmpty}" AutomationId="LettersEmptyLabel" />
+        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" AutomationId="LettersList">
+          <BindableLayout.ItemTemplate>
+            <DataTemplate x:DataType="vm:LetterRowViewModel">
+              <Grid ColumnDefinitions="24,Auto,*"
+                    ColumnSpacing="{StaticResource SpaceS}"
+                    Padding="{StaticResource RowPadding}"
+                    MinimumHeightRequest="{StaticResource TouchSize}"
+                    AutomationId="{Binding AutomationId}">
+                <Grid.GestureRecognizers>
+                  <TapGestureRecognizer
+                      Command="{Binding OpenCommand, Source={RelativeSource AncestorType={x:Type vm:LettersViewModel}}, x:DataType=vm:LettersViewModel}"
+                      CommandParameter="{Binding .}" />
+                </Grid.GestureRecognizers>
+                <Label Text="{Binding Marker}" Style="{StaticResource EnergyLabel}" VerticalOptions="Center" />
+                <Label Grid.Column="1" Text="{Binding Date}" VerticalOptions="Center" />
+                <Label Grid.Column="2" Text="{Binding Status}" Style="{StaticResource SecondaryLabel}" VerticalOptions="Center" LineBreakMode="TailTruncation" MaxLines="1" />
+              </Grid>
+            </DataTemplate>
+          </BindableLayout.ItemTemplate>
+        </VerticalStackLayout>
+        <Button Text="{x:Static p:Strings.Letters_New}"
+                Style="{StaticResource SecondaryButton}"
+                Command="{Binding NewCommand}"
+                AutomationId="LettersNewButton" />
+      </VerticalStackLayout>
+    </ScrollView>
+    <c:BottomBar Grid.Row="1" ActiveTab="Letters" />
+  </Grid>
+</views:ViewModelPage>

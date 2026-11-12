@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     x:Class="MoonDiary.Views.NewLetterPage"
+                     x:DataType="vm:NewLetterViewModel">
+  <Grid RowDefinitions="Auto,*,Auto" Padding="{StaticResource PagePadding}" RowSpacing="{StaticResource SpaceM}">
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <Button Text="✕"
+              Style="{StaticResource IconButton}"
+              Command="{Binding CloseCommand}"
+              SemanticProperties.Description="{x:Static p:Strings.Common_Close}"
+              AutomationId="NewLetterCloseButton" />
+      <Label Grid.Column="1" Text="{x:Static p:Strings.NewLetter_Title}" Style="{StaticResource TitleLabel}" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+      <Button Grid.Column="2"
+              Text="{x:Static p:Strings.NewLetter_Send}"
+              Style="{StaticResource TextButton}"
+              Command="{Binding SendCommand}"
+              AutomationId="NewLetterSendButton" />
+    </Grid>
+    <Border Grid.Row="1" Style="{StaticResource Card}">
+      <Grid RowDefinitions="*,Auto">
+        <Editor Text="{Binding Text}"
+                Placeholder="{x:Static p:Strings.NewLetter_Placeholder}"
+                MaxLength="5000"
+                AutomationId="NewLetterTextEditor" />
+        <Label Grid.Row="1" Text="{Binding Counter}" Style="{StaticResource SecondaryLabel}" IsVisible="{Binding ShowCounter}" HorizontalTextAlignment="End" />
+      </Grid>
+    </Border>
+    <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource SpaceM}">
+      <Label Text="{x:Static p:Strings.NewLetter_Open}" VerticalOptions="Center" />
+      <DatePicker Grid.Column="1"
+                  Date="{Binding OpenDate}"
+                  MinimumDate="{Binding MinDate}"
+                  Format="d MMMM yyyy"
+                  AutomationId="NewLetterDatePicker" />
+    </Grid>
+  </Grid>
+</views:ViewModelPage>

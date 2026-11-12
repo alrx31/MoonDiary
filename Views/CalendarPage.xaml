@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     xmlns:cal="clr-namespace:MoonDiary.Core.Calendar;assembly=MoonDiary.Core"
+                     x:Class="MoonDiary.Views.CalendarPage"
+                     x:DataType="vm:CalendarViewModel">
+  <Grid RowDefinitions="*,Auto">
+    <ScrollView>
+      <VerticalStackLayout Padding="{StaticResource PagePadding}" Spacing="{StaticResource SpaceS}">
+        <Grid ColumnDefinitions="*,Auto,Auto">
+          <Label Text="{Binding MonthTitle}"
+                 Style="{StaticResource TitleLabel}"
+                 VerticalOptions="Center"
+                 AutomationId="CalendarMonthTitle" />
+          <Button Grid.Column="1"
+                  Text="‹"
+                  Style="{StaticResource IconButton}"
+                  Command="{Binding PreviousCommand}"
+                  SemanticProperties.Description="{x:Static p:Strings.Calendar_Previous}"
+                  AutomationId="CalendarPreviousButton" />
+          <Button Grid.Column="2"
+                  Text="›"
+                  Style="{StaticResource IconButton}"
+                  Command="{Binding NextCommand}"
+                  SemanticProperties.Description="{x:Static p:Strings.Calendar_Next}"
+                  AutomationId="CalendarNextButton" />
+        </Grid>
+        <c:CalendarView Days="{Binding Days}"
+                        DayTappedCommand="{Binding OpenDayCommand}"
+                        PreviousCommand="{Binding PreviousCommand}"
+                        NextCommand="{Binding NextCommand}"
+                        AutomationId="CalendarGrid" />
+        <Grid ColumnDefinitions="*,Auto">
+          <HorizontalStackLayout Spacing="{StaticResource SpaceM}" VerticalOptions="Center">
+            <Label Text="⚡ энергия" Style="{StaticResource SecondaryLabel}" />
+            <Label Text="☺ позитив" Style="{StaticResource SecondaryLabel}" />
+          </HorizontalStackLayout>
+          <Button Grid.Column="1"
+                  Text="{x:Static p:Strings.Calendar_Checkin}"
+                  Style="{StaticResource SecondaryButton}"
+                  Command="{Binding CheckinCommand}"
+                  AutomationId="CalendarCheckinButton" />
+        </Grid>
+        <BoxView Style="{StaticResource Divider}" />
+        <Label Text="{x:Static p:Strings.Calendar_Empty}"
+               Style="{StaticResource EmptyLabel}"
+               IsVisible="{Binding IsEmpty}"
+               AutomationId="CalendarEmptyLabel" />
+        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Feed}" AutomationId="CalendarFeed">
+          <BindableLayout.ItemTemplate>
+            <DataTemplate x:DataType="vm:FeedRowViewModel">
+              <Grid ColumnDefinitions="24,120,44,44,*"
+                    Padding="{StaticResource RowPadding}"
+                    MinimumHeightRequest="{StaticResource TouchSize}"
+                    AutomationId="{Binding AutomationId}">
+                <Grid.GestureRecognizers>
+                  <TapGestureRecognizer
+                      Command="{Binding OpenDayCommand, Source={RelativeSource AncestorType={x:Type vm:CalendarViewModel}}, x:DataType=vm:CalendarViewModel}"
+                      CommandParameter="{Binding Date}" />
+                </Grid.GestureRecognizers>
+                <Label Text="{Binding Marker}" Style="{StaticResource MutedLabel}" VerticalOptions="Center" />
+                <Label Grid.Column="1" Text="{Binding DateText}" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                <Label Grid.Column="2" Text="{Binding EnergyText, StringFormat='⚡{0}'}" Style="{StaticResource EnergyLabel}" VerticalOptions="Center" />
+                <Label Grid.Column="3" Text="{Binding PositivityText, StringFormat='☺{0}'}" Style="{StaticResource PositivityLabel}" VerticalOptions="Center" />
+                <Label Grid.Column="4" Text="{Binding ShortText}" Style="{StaticResource SecondaryLabel}" VerticalOptions="Center" LineBreakMode="TailTruncation" MaxLines="1" />
+              </Grid>
+            </DataTemplate>
+          </BindableLayout.ItemTemplate>
+        </VerticalStackLayout>
+      </VerticalStackLayout>
+    </ScrollView>
+    <c:BottomBar Grid.Row="1" ActiveTab="Calendar" />
+  </Grid>
+</views:ViewModelPage>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     xmlns:cal="clr-namespace:MoonDiary.Core.Calendar;assembly=MoonDiary.Core"
+                     x:Class="MoonDiary.Views.SummaryPage"
+                     x:DataType="vm:SummaryViewModel">
+  <Grid RowDefinitions="*,Auto" Padding="{StaticResource PagePadding}">
+    <VerticalStackLayout VerticalOptions="Center" Spacing="{StaticResource SpaceL}">
+      <Label Text="{Binding Thanks}"
+             Style="{StaticResource DisplayLabel}"
+             HorizontalTextAlignment="Center"
+             AutomationId="SummaryThanksLabel" />
+      <HorizontalStackLayout HorizontalOptions="Center" Spacing="{StaticResource SpaceL}">
+        <Label Text="{Binding Energy, StringFormat='⚡ {0}'}" Style="{StaticResource EnergyLabel}" FontSize="{StaticResource FontDisplay}" AutomationId="SummaryEnergyLabel" />
+        <Label Text="{Binding Positivity, StringFormat='☺ {0}'}" Style="{StaticResource PositivityLabel}" FontSize="{StaticResource FontDisplay}" AutomationId="SummaryPositivityLabel" />
+      </HorizontalStackLayout>
+      <Label Text="{Binding Filled}"
+             Style="{StaticResource SecondaryLabel}"
+             HorizontalTextAlignment="Center"
+             AutomationId="SummaryFilledLabel" />
+    </VerticalStackLayout>
+    <Button Grid.Row="1"
+            Text="{x:Static p:Strings.Common_Done}"
+            Style="{StaticResource PrimaryButton}"
+            Command="{Binding DoneCommand}"
+            AutomationId="SummaryDoneButton" />
+  </Grid>
+</views:ViewModelPage>

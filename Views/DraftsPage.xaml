@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     x:Class="MoonDiary.Views.DraftsPage"
+                     x:DataType="vm:DraftsViewModel">
+  <Grid RowDefinitions="Auto,*" Padding="{StaticResource PagePadding}" RowSpacing="{StaticResource SpaceS}">
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <Button Text="‹"
+              Style="{StaticResource IconButton}"
+              Command="{Binding BackCommand}"
+              SemanticProperties.Description="{x:Static p:Strings.Common_Back}"
+              AutomationId="DraftsBackButton" />
+      <Label Grid.Column="1" Text="{x:Static p:Strings.User_Drafts}" Style="{StaticResource TitleLabel}" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+    </Grid>
+    <ScrollView Grid.Row="1">
+      <VerticalStackLayout>
+        <Label Text="{x:Static p:Strings.Drafts_Empty}" Style="{StaticResource EmptyLabel}" IsVisible="{Binding IsEmpty}" AutomationId="DraftsEmptyLabel" />
+        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" AutomationId="DraftsList">
+          <BindableLayout.ItemTemplate>
+            <DataTemplate x:DataType="vm:DraftRowViewModel">
+              <Grid ColumnDefinitions="*,Auto">
+                <c:ListRow Text="{Binding Text}"
+                           AutomationId="DraftsRow"
+                           Command="{Binding OpenCommand, Source={RelativeSource AncestorType={x:Type vm:DraftsViewModel}}, x:DataType=vm:DraftsViewModel}"
+                           CommandParameter="{Binding .}" />
+                <Button Grid.Column="1"
+                        Text="✕"
+                        Style="{StaticResource DestructiveButton}"
+                        SemanticProperties.Description="{x:Static p:Strings.Common_Delete}"
+                        AutomationId="DraftsDeleteButton"
+                        Command="{Binding DeleteCommand, Source={RelativeSource AncestorType={x:Type vm:DraftsViewModel}}, x:DataType=vm:DraftsViewModel}"
+                        CommandParameter="{Binding .}" />
+              </Grid>
+            </DataTemplate>
+          </BindableLayout.ItemTemplate>
+        </VerticalStackLayout>
+      </VerticalStackLayout>
+    </ScrollView>
+  </Grid>
+</views:ViewModelPage>

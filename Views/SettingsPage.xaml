@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     x:Class="MoonDiary.Views.SettingsPage"
+                     x:DataType="vm:SettingsViewModel">
+  <Grid RowDefinitions="Auto,*" Padding="{StaticResource PagePadding}" RowSpacing="{StaticResource SpaceS}">
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <Button Text="‹"
+              Style="{StaticResource IconButton}"
+              Command="{Binding BackCommand}"
+              SemanticProperties.Description="{x:Static p:Strings.Common_Back}"
+              AutomationId="SettingsBackButton" />
+      <Label Grid.Column="1" Text="{x:Static p:Strings.User_Settings}" Style="{StaticResource TitleLabel}" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+    </Grid>
+    <ScrollView Grid.Row="1">
+      <VerticalStackLayout Spacing="{StaticResource SpaceS}">
+        <Label Text="{x:Static p:Strings.Settings_Theme}" Style="{StaticResource SectionLabel}" />
+        <HorizontalStackLayout Spacing="{StaticResource SpaceS}">
+          <c:ToggleButton Text="{x:Static p:Strings.Settings_ThemeLight}" IsSelected="{Binding IsLight}" Command="{Binding SelectThemeCommand}" CommandParameter="Light" AutomationId="SettingsThemeLight" />
+          <c:ToggleButton Text="{x:Static p:Strings.Settings_ThemeDark}" IsSelected="{Binding IsDark}" Command="{Binding SelectThemeCommand}" CommandParameter="Dark" AutomationId="SettingsThemeDark" />
+          <c:ToggleButton Text="{x:Static p:Strings.Settings_ThemeAuto}" IsSelected="{Binding IsAuto}" Command="{Binding SelectThemeCommand}" CommandParameter="Auto" AutomationId="SettingsThemeAuto" />
+        </HorizontalStackLayout>
+        <Label Text="{x:Static p:Strings.Settings_Reminder}" Style="{StaticResource SectionLabel}" />
+        <Border Style="{StaticResource Card}">
+          <VerticalStackLayout Spacing="{StaticResource SpaceS}">
+            <Grid ColumnDefinitions="*,Auto">
+              <Label Text="{x:Static p:Strings.Settings_Reminder}" VerticalOptions="Center" />
+              <Switch Grid.Column="1" IsToggled="{Binding ReminderEnabled}" AutomationId="SettingsReminderSwitch" />
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ReminderEnabled}">
+              <Label Text="{x:Static p:Strings.Settings_ReminderTime}" VerticalOptions="Center" />
+              <TimePicker Grid.Column="1" Time="{Binding ReminderTime}" Format="HH:mm" AutomationId="SettingsReminderTime" />
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding ReminderEnabled}">
+              <Label Text="{x:Static p:Strings.Settings_Adaptive}" VerticalOptions="Center" />
+              <Switch Grid.Column="1" IsToggled="{Binding AdaptiveReminder}" AutomationId="SettingsAdaptiveSwitch" />
+            </Grid>
+            <Label Text="{x:Static p:Strings.Settings_AdaptiveHint}" Style="{StaticResource SecondaryLabel}" IsVisible="{Binding ReminderEnabled}" />
+          </VerticalStackLayout>
+        </Border>
+        <c:ListRow Text="{x:Static p:Strings.Settings_NotificationsDenied}"
+                   IsVisible="{Binding NotificationsDenied}"
+                   Command="{Binding OpenNotificationSettingsCommand}"
+                   AutomationId="SettingsNotificationsDeniedRow" />
+        <Label Text="{x:Static p:Strings.Settings_Export}" Style="{StaticResource SectionLabel}" />
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource SpaceS}">
+          <Button Text="{x:Static p:Strings.Settings_ExportButton}" Style="{StaticResource SecondaryButton}" Command="{Binding ExportCommand}" AutomationId="SettingsExportButton" />
+          <Button Grid.Column="1" Text="{x:Static p:Strings.Settings_ImportButton}" Style="{StaticResource SecondaryButton}" Command="{Binding ImportCommand}" AutomationId="SettingsImportButton" />
+        </Grid>
+        <Label Text="{x:Static p:Strings.Settings_Backup}" Style="{StaticResource SectionLabel}" />
+        <c:ListRow Text="{Binding BackupStatus}" Command="{Binding OpenBackupSettingsCommand}" AutomationId="SettingsBackupRow" />
+      </VerticalStackLayout>
+    </ScrollView>
+  </Grid>
+</views:ViewModelPage>
