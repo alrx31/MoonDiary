@@ -20,6 +20,10 @@ public sealed class DayClock
 
     public DateOnly CurrentDayKey => GetDayKey(LocalNow);
 
+    public DateOnly CurrentWeekStart => GetWeekStart(CurrentDayKey);
+
+    public DateOnly LastCompletedWeekStart => CurrentWeekStart.AddDays(-7);
+
     public bool IsInFillWindow => IsInFillWindowAt(LocalNow);
 
     public static DateOnly GetDayKey(DateTimeOffset local)
@@ -35,5 +39,24 @@ public sealed class DayClock
         var time = TimeOnly.FromDateTime(local.DateTime);
 
         return time >= FillWindowStart || time < DayStart;
+    }
+
+    public static DateOnly GetWeekStart(DateOnly day) => day.AddDays(-(((int)day.DayOfWeek + 6) % 7));
+
+    public DateTimeOffset GetDayStartLocal(DateOnly dayKey)
+    {
+        var local = dayKey.ToDateTime(DayStart);
+
+        return new DateTimeOffset(local, timeProvider.LocalTimeZone.GetUtcOffset(local));
+    }
+
+    public static DateOnly ToDayKey(DateTime utc, int offsetMinutes) => GetDayKey(ToLocal(utc, offsetMinutes));
+
+    public static DateTimeOffset ToLocal(DateTime utc, int offsetMinutes)
+    {
+        var offset = TimeSpan.FromMinutes(offsetMinutes);
+        var local = DateTime.SpecifyKind(utc, DateTimeKind.Unspecified).AddMinutes(offsetMinutes);
+
+        return new DateTimeOffset(local, offset);
     }
 }
