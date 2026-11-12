@@ -27,7 +27,7 @@ public sealed partial class SettingsViewModel : ViewModelBase
     private bool reminderEnabled;
 
     [ObservableProperty]
-    private TimeSpan reminderTime;
+    private TimeSpan? reminderTime;
 
     [ObservableProperty]
     private bool adaptiveReminder;
@@ -164,7 +164,7 @@ public sealed partial class SettingsViewModel : ViewModelBase
 
     partial void OnReminderEnabledChanged(bool value) => _ = SaveAsync();
 
-    partial void OnReminderTimeChanged(TimeSpan value) => _ = SaveAsync();
+    partial void OnReminderTimeChanged(TimeSpan? value) => _ = SaveAsync();
 
     partial void OnAdaptiveReminderChanged(bool value) => _ = SaveAsync();
 
@@ -181,7 +181,7 @@ public sealed partial class SettingsViewModel : ViewModelBase
 
             current.Theme = ThemeMode;
             current.ReminderEnabled = ReminderEnabled;
-            current.ReminderTime = TimeOnly.FromTimeSpan(ReminderTime);
+            current.ReminderTime = ReminderTime is { } time ? TimeOnly.FromTimeSpan(time) : current.ReminderTime;
             current.AdaptiveReminder = AdaptiveReminder;
             await settings.SaveAsync(current);
             await scheduler.RefreshAsync();

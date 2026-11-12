@@ -42,6 +42,7 @@ public sealed partial class AnalyticsViewModel : ViewModelBase
     private bool hasAchievements;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(NextMonthCommand))]
     private bool canGoNextMonth;
 
     [ObservableProperty]
@@ -101,7 +102,7 @@ public sealed partial class AnalyticsViewModel : ViewModelBase
     [RelayCommand]
     private Task PreviousMonthAsync() => ShiftMonthAsync(-1);
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanGoNextMonth))]
     private Task NextMonthAsync() => CanGoNextMonth ? ShiftMonthAsync(1) : Task.CompletedTask;
 
     private Task ShiftMonthAsync(int delta)

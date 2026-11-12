@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     x:Class="MoonDiary.Views.TagsPage"
+                     x:DataType="vm:TagsViewModel">
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="{StaticResource PagePadding}" RowSpacing="{StaticResource SpaceS}">
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <Button Text="‹"
+              Style="{StaticResource IconButton}"
+              Command="{Binding BackCommand}"
+              SemanticProperties.Description="{x:Static p:Strings.Common_Back}"
+              AutomationId="TagsBackButton" />
+      <Label Grid.Column="1" Text="{x:Static p:Strings.User_Tags}" Style="{StaticResource TitleLabel}" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+    </Grid>
+    <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+      <HorizontalStackLayout Spacing="{StaticResource SpaceS}">
+        <c:ToggleButton Text="{x:Static p:Strings.Wizard_DoneTitle}" IsSelected="{Binding IsDone}" Command="{Binding SelectCardCommand}" CommandParameter="Done" AutomationId="TagsCardDone" />
+        <c:ToggleButton Text="{x:Static p:Strings.Wizard_AchievementTitle}" IsSelected="{Binding IsAchievement}" Command="{Binding SelectCardCommand}" CommandParameter="Achievement" AutomationId="TagsCardAchievement" />
+        <c:ToggleButton Text="{x:Static p:Strings.Wizard_FeelingsTitle}" IsSelected="{Binding IsFeelings}" Command="{Binding SelectCardCommand}" CommandParameter="Feelings" AutomationId="TagsCardFeelings" />
+      </HorizontalStackLayout>
+    </ScrollView>
+    <ScrollView Grid.Row="2">
+      <VerticalStackLayout Spacing="{StaticResource SpaceXs}">
+        <Label Text="{x:Static p:Strings.Tags_Empty}" Style="{StaticResource EmptyLabel}" IsVisible="{Binding IsEmpty}" />
+        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" AutomationId="TagsList">
+          <BindableLayout.ItemTemplate>
+            <DataTemplate x:DataType="vm:TagRowViewModel">
+              <Grid ColumnDefinitions="*,Auto,Auto,Auto" MinimumHeightRequest="{StaticResource TouchSize}">
+                <VerticalStackLayout VerticalOptions="Center">
+                  <Label Text="{Binding Display}" />
+                  <Label Text="{Binding Direction}" Style="{StaticResource SecondaryLabel}" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Text="↑" Style="{StaticResource IconButton}"
+                        SemanticProperties.Description="{x:Static p:Strings.Tags_Up}"
+                        Command="{Binding MoveUpCommand, Source={RelativeSource AncestorType={x:Type vm:TagsViewModel}}, x:DataType=vm:TagsViewModel}"
+                        CommandParameter="{Binding .}" />
+                <Button Grid.Column="2" Text="↓" Style="{StaticResource IconButton}"
+                        SemanticProperties.Description="{x:Static p:Strings.Tags_Down}"
+                        Command="{Binding MoveDownCommand, Source={RelativeSource AncestorType={x:Type vm:TagsViewModel}}, x:DataType=vm:TagsViewModel}"
+                        CommandParameter="{Binding .}" />
+                <Button Grid.Column="3" Text="✕" Style="{StaticResource DestructiveButton}"
+                        SemanticProperties.Description="{x:Static p:Strings.Common_Delete}"
+                        Command="{Binding ArchiveCommand, Source={RelativeSource AncestorType={x:Type vm:TagsViewModel}}, x:DataType=vm:TagsViewModel}"
+                        CommandParameter="{Binding .}" />
+              </Grid>
+            </DataTemplate>
+          </BindableLayout.ItemTemplate>
+        </VerticalStackLayout>
+        <Label Text="{x:Static p:Strings.Tags_Suggestions}" Style="{StaticResource SectionLabel}" IsVisible="{Binding HasSuggestions}" />
+        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Suggested}" IsVisible="{Binding HasSuggestions}" AutomationId="TagsSuggestions">
+          <BindableLayout.ItemTemplate>
+            <DataTemplate x:DataType="x:String">
+              <Grid ColumnDefinitions="*,Auto,Auto" MinimumHeightRequest="{StaticResource TouchSize}">
+                <Label Text="{Binding .}" VerticalOptions="Center" />
+                <Button Grid.Column="1" Text="{x:Static p:Strings.Tags_Accept}" Style="{StaticResource TextButton}"
+                        Command="{Binding AcceptSuggestionCommand, Source={RelativeSource AncestorType={x:Type vm:TagsViewModel}}, x:DataType=vm:TagsViewModel}"
+                        CommandParameter="{Binding .}" />
+                <Button Grid.Column="2" Text="{x:Static p:Strings.Tags_Dismiss}" Style="{StaticResource DestructiveButton}"
+                        Command="{Binding DismissSuggestionCommand, Source={RelativeSource AncestorType={x:Type vm:TagsViewModel}}, x:DataType=vm:TagsViewModel}"
+                        CommandParameter="{Binding .}" />
+              </Grid>
+            </DataTemplate>
+          </BindableLayout.ItemTemplate>
+        </VerticalStackLayout>
+      </VerticalStackLayout>
+    </ScrollView>
+    <Button Grid.Row="3"
+            Text="{x:Static p:Strings.Tags_Add}"
+            Style="{StaticResource SecondaryButton}"
+            Command="{Binding AddCommand}"
+            AutomationId="TagsAddButton" />
+  </Grid>
+</views:ViewModelPage>

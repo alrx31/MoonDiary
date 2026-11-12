@@ -15,6 +15,7 @@ public sealed partial class TagFormViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private string label = string.Empty;
 
     [ObservableProperty]
@@ -50,7 +51,7 @@ public sealed partial class TagFormViewModel : ViewModelBase
     [RelayCommand]
     private void SelectIcon(string value) => Icon = value;
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
     {
         if (!CanSave)

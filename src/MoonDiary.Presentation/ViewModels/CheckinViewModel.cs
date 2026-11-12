@@ -14,10 +14,12 @@ public sealed partial class CheckinViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(EnergyLabel), nameof(CanSave))]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private int energy;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(PositivityLabel), nameof(CanSave))]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private int positivity;
 
     [ObservableProperty]
@@ -71,7 +73,7 @@ public sealed partial class CheckinViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
     {
         if (!CanSave)

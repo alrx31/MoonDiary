@@ -24,6 +24,7 @@ public sealed partial class CalendarViewModel : ViewModelBase
     private IReadOnlyList<FeedRowViewModel> feed = [];
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(NextCommand))]
     private bool canGoNext;
 
     [ObservableProperty]
@@ -52,7 +53,7 @@ public sealed partial class CalendarViewModel : ViewModelBase
         return LoadAsync();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanGoNext))]
     private Task NextAsync()
     {
         if (!CanGoNext)

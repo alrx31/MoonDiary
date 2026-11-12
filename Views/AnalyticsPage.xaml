@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     x:Class="MoonDiary.Views.AnalyticsPage"
+                     x:DataType="vm:AnalyticsViewModel">
+  <Grid RowDefinitions="*,Auto">
+    <ScrollView>
+      <VerticalStackLayout Padding="{StaticResource PagePadding}" Spacing="{StaticResource SpaceS}">
+        <Label Text="{x:Static p:Strings.Tab_Analytics}" Style="{StaticResource TitleLabel}" />
+        <Label Text="{x:Static p:Strings.Analytics_LastReport}" Style="{StaticResource SectionLabel}" />
+        <Border Style="{StaticResource Card}" AutomationId="AnalyticsReportCard">
+          <VerticalStackLayout Spacing="{StaticResource SpaceS}">
+            <Label Text="{x:Static p:Strings.Analytics_NoReport}" Style="{StaticResource MutedLabel}" AutomationId="AnalyticsNoReportLabel">
+              <Label.Triggers>
+                <DataTrigger TargetType="Label" Binding="{Binding HasReport}" Value="True">
+                  <Setter Property="IsVisible" Value="False" />
+                </DataTrigger>
+              </Label.Triggers>
+            </Label>
+            <VerticalStackLayout IsVisible="{Binding HasReport}" Spacing="{StaticResource SpaceS}">
+              <Label Text="{Binding ReportTitle}" Style="{StaticResource EnergyLabel}" />
+          <VerticalStackLayout BindableLayout.ItemsSource="{Binding ReportSummary}" Spacing="{StaticResource SpaceXs}">
+            <BindableLayout.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <Label Text="{Binding .}" />
+              </DataTemplate>
+            </BindableLayout.ItemTemplate>
+          </VerticalStackLayout>
+              <Button Text="{x:Static p:Strings.Analytics_OpenReport}"
+                      Style="{StaticResource SecondaryButton}"
+                      Command="{Binding OpenReportCommand}"
+                      AutomationId="AnalyticsOpenReportButton" />
+            </VerticalStackLayout>
+          </VerticalStackLayout>
+        </Border>
+        <Label Text="{x:Static p:Strings.Analytics_Dynamics}" Style="{StaticResource SectionLabel}" />
+        <Border Style="{StaticResource Card}" AutomationId="AnalyticsDynamicsCard">
+          <VerticalStackLayout Spacing="{StaticResource SpaceS}">
+            <Label Text="{x:Static p:Strings.Analytics_NoDynamics}" Style="{StaticResource MutedLabel}">
+              <Label.Triggers>
+                <DataTrigger TargetType="Label" Binding="{Binding HasDynamics}" Value="True">
+                  <Setter Property="IsVisible" Value="False" />
+                </DataTrigger>
+              </Label.Triggers>
+            </Label>
+            <c:DynamicsChartView Points="{Binding Dynamics}" IsVisible="{Binding HasDynamics}" />
+            <HorizontalStackLayout Spacing="{StaticResource SpaceM}" IsVisible="{Binding HasDynamics}">
+              <Label Text="● энергия" Style="{StaticResource EnergyLabel}" FontSize="{StaticResource FontCaption}" />
+              <Label Text="■ позитив (пунктир)" Style="{StaticResource PositivityLabel}" FontSize="{StaticResource FontCaption}" />
+            </HorizontalStackLayout>
+          </VerticalStackLayout>
+        </Border>
+        <Label Text="{x:Static p:Strings.Analytics_Achievements}" Style="{StaticResource SectionLabel}" />
+        <Border Style="{StaticResource Card}" AutomationId="AnalyticsAchievementsCard">
+          <VerticalStackLayout Spacing="{StaticResource SpaceS}">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+              <Label Text="{Binding AchievementsMonth}" VerticalOptions="Center" />
+              <Button Grid.Column="1" Text="‹" Style="{StaticResource IconButton}" Command="{Binding PreviousMonthCommand}"
+                      SemanticProperties.Description="{x:Static p:Strings.Calendar_Previous}" AutomationId="AnalyticsPreviousMonthButton" />
+              <Button Grid.Column="2" Text="›" Style="{StaticResource IconButton}" Command="{Binding NextMonthCommand}"
+                      SemanticProperties.Description="{x:Static p:Strings.Calendar_Next}" AutomationId="AnalyticsNextMonthButton" />
+            </Grid>
+            <Label Text="{x:Static p:Strings.Analytics_NoAchievements}" Style="{StaticResource MutedLabel}">
+              <Label.Triggers>
+                <DataTrigger TargetType="Label" Binding="{Binding HasAchievements}" Value="True">
+                  <Setter Property="IsVisible" Value="False" />
+                </DataTrigger>
+              </Label.Triggers>
+            </Label>
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Achievements}" Spacing="{StaticResource SpaceXs}">
+              <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="vm:AchievementRowViewModel">
+                  <Grid ColumnDefinitions="96,*">
+                    <Label Text="{Binding Date}" Style="{StaticResource SecondaryLabel}" />
+                    <Label Grid.Column="1" Text="{Binding Text}" />
+                  </Grid>
+                </DataTemplate>
+              </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+          </VerticalStackLayout>
+        </Border>
+        <Label Text="{x:Static p:Strings.Analytics_Streak}" Style="{StaticResource SectionLabel}" />
+        <Border Style="{StaticResource Card}">
+          <Label Text="{Binding Streak}" AutomationId="AnalyticsStreakLabel" />
+        </Border>
+        <c:ListRow Text="{x:Static p:Strings.Analytics_AllReports}" Command="{Binding OpenReportsCommand}" AutomationId="AnalyticsAllReportsRow" />
+      </VerticalStackLayout>
+    </ScrollView>
+    <c:BottomBar Grid.Row="1" ActiveTab="Analytics" />
+  </Grid>
+</views:ViewModelPage>

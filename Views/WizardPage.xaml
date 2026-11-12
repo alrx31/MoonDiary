@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     xmlns:cal="clr-namespace:MoonDiary.Core.Calendar;assembly=MoonDiary.Core"
+                     x:Class="MoonDiary.Views.WizardPage"
+                     x:DataType="vm:WizardViewModel">
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="{StaticResource PagePadding}" RowSpacing="{StaticResource SpaceM}">
+    <Grid.GestureRecognizers>
+      <SwipeGestureRecognizer Direction="Right" Command="{Binding SkipCommand}" />
+    </Grid.GestureRecognizers>
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <Button Text="✕"
+              Style="{StaticResource IconButton}"
+              IsVisible="{Binding IsMoodStep}"
+              Command="{Binding CloseCommand}"
+              SemanticProperties.Description="{x:Static p:Strings.Common_Close}"
+              AutomationId="WizardCloseButton" />
+      <Button Text="‹"
+              Style="{StaticResource IconButton}"
+              IsVisible="{Binding IsTextStep}"
+              Command="{Binding BackCommand}"
+              SemanticProperties.Description="{x:Static p:Strings.Common_Back}"
+              AutomationId="WizardBackButton" />
+      <Label Grid.Column="1"
+             Text="{Binding Title}"
+             HorizontalTextAlignment="Center"
+             VerticalOptions="Center"
+             AutomationId="WizardDayTitle" />
+      <Button Grid.Column="2"
+              Text="{x:Static p:Strings.Wizard_Save}"
+              Style="{StaticResource TextButton}"
+              Command="{Binding SaveCommand}"
+              AutomationId="WizardSaveButton" />
+    </Grid>
+    <c:StepIndicator Grid.Row="1" Step="{Binding Step}" />
+    <ScrollView Grid.Row="2">
+      <Grid>
+        <VerticalStackLayout IsVisible="{Binding IsMoodStep}" Spacing="{StaticResource SpaceM}" AutomationId="WizardMoodCard">
+          <Label Text="{x:Static p:Strings.Wizard_MoodTitle}" Style="{StaticResource DisplayLabel}" HorizontalTextAlignment="Center" />
+          <Label Text="{x:Static p:Strings.Common_Energy}" Style="{StaticResource SectionLabel}" HorizontalTextAlignment="Center" />
+          <c:MoodScaleView Kind="Energy" Value="{Binding Energy}" IdPrefix="WizardEnergy" />
+          <Label Text="{Binding EnergyLabel}" Style="{StaticResource EnergyLabel}" HorizontalTextAlignment="Center" AutomationId="WizardEnergyLabel" />
+          <Label Text="{x:Static p:Strings.Common_Positivity}" Style="{StaticResource SectionLabel}" HorizontalTextAlignment="Center" />
+          <c:MoodScaleView Kind="Positivity" Value="{Binding Positivity}" IdPrefix="WizardPositivity" />
+          <Label Text="{Binding PositivityLabel}" Style="{StaticResource PositivityLabel}" HorizontalTextAlignment="Center" AutomationId="WizardPositivityLabel" />
+          <Button Text="{x:Static p:Strings.Wizard_DraftLink}"
+                  Style="{StaticResource TextButton}"
+                  IsVisible="{Binding HasDraftLink}"
+                  Command="{Binding OpenDraftCommand}"
+                  HorizontalOptions="Center"
+                  AutomationId="WizardDraftLink" />
+        </VerticalStackLayout>
+        <VerticalStackLayout IsVisible="{Binding IsTextStep}" Spacing="{StaticResource SpaceM}" AutomationId="WizardTextCard">
+          <Label Text="{Binding CardTitle}" Style="{StaticResource DisplayLabel}" AutomationId="WizardCardTitle" />
+          <Border Style="{StaticResource Card}">
+            <VerticalStackLayout>
+              <Editor Text="{Binding Text}"
+                      Placeholder="{x:Static p:Strings.Wizard_TextPlaceholder}"
+                      MaxLength="500"
+                      AutoSize="TextChanges"
+                      MinimumHeightRequest="110"
+                      AutomationId="WizardTextEditor" />
+              <Label Text="{Binding Counter}"
+                     Style="{StaticResource SecondaryLabel}"
+                     IsVisible="{Binding ShowCounter}"
+                     HorizontalTextAlignment="End"
+                     AutomationId="WizardCounter" />
+            </VerticalStackLayout>
+          </Border>
+          <FlexLayout BindableLayout.ItemsSource="{Binding Tags}" Wrap="Wrap" AutomationId="WizardTags">
+            <BindableLayout.ItemTemplate>
+              <DataTemplate x:DataType="vm:TagChipViewModel">
+                <c:ToggleButton Text="{Binding Display}"
+                                IsSelected="{Binding IsSelected}"
+                                Margin="{StaticResource ChipMargin}"
+                                AutomationId="{Binding AutomationId}"
+                                Command="{Binding ToggleTagCommand, Source={RelativeSource AncestorType={x:Type vm:WizardViewModel}}, x:DataType=vm:WizardViewModel}"
+                                CommandParameter="{Binding .}" />
+              </DataTemplate>
+            </BindableLayout.ItemTemplate>
+          </FlexLayout>
+          <Label Text="{x:Static p:Strings.Wizard_SkipHint}" Style="{StaticResource SecondaryLabel}" HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+      </Grid>
+    </ScrollView>
+    <Button Grid.Row="3"
+            Text="{x:Static p:Strings.Wizard_Continue}"
+            Style="{StaticResource PrimaryButton}"
+            Command="{Binding ContinueCommand}"
+            AutomationId="WizardContinueButton" />
+  </Grid>
+</views:ViewModelPage>

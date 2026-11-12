@@ -1,4 +1,4 @@
-﻿namespace MoonDiary;
+namespace MoonDiary;
 
 public partial class AppShell : Shell
 {

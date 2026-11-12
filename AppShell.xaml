@@ -3,12 +3,15 @@
     x:Class="MoonDiary.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:MoonDiary"
+    xmlns:views="clr-namespace:MoonDiary.Views"
     Shell.FlyoutBehavior="Disabled">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+  <ShellContent Route="loading" ContentTemplate="{DataTemplate views:LoadingPage}" />
+  <ShellContent Route="onboarding" ContentTemplate="{DataTemplate views:OnboardingPage}" />
+  <ShellContent Route="databaseError" ContentTemplate="{DataTemplate views:DatabaseErrorPage}" />
+  <ShellContent Route="calendar" ContentTemplate="{DataTemplate views:CalendarPage}" />
+  <ShellContent Route="analytics" ContentTemplate="{DataTemplate views:AnalyticsPage}" />
+  <ShellContent Route="letters" ContentTemplate="{DataTemplate views:LettersPage}" />
+  <ShellContent Route="user" ContentTemplate="{DataTemplate views:UserPage}" />
 
 </Shell>

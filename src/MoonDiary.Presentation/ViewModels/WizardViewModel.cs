@@ -32,10 +32,12 @@ public sealed partial class WizardViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(EnergyLabel), nameof(CanProceed))]
+    [NotifyCanExecuteChangedFor(nameof(ContinueCommand), nameof(SaveCommand))]
     private int energy;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(PositivityLabel), nameof(CanProceed))]
+    [NotifyCanExecuteChangedFor(nameof(ContinueCommand), nameof(SaveCommand))]
     private int positivity;
 
     [ObservableProperty]
@@ -109,7 +111,7 @@ public sealed partial class WizardViewModel : ViewModelBase
         await LoadStepAsync();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanProceed))]
     private async Task ContinueAsync()
     {
         if (!CanProceed)
@@ -145,7 +147,7 @@ public sealed partial class WizardViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanProceed))]
     private async Task SaveAsync()
     {
         if (!CanProceed)

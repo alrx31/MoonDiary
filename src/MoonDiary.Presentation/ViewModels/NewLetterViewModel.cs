@@ -14,10 +14,11 @@ public sealed partial class NewLetterViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSend), nameof(Counter), nameof(ShowCounter))]
+    [NotifyCanExecuteChangedFor(nameof(SendCommand))]
     private string text = string.Empty;
 
     [ObservableProperty]
-    private DateTime openDate;
+    private DateTime? openDate;
 
     public NewLetterViewModel(ViewModelContext context, LetterService letters, ReminderScheduler scheduler)
         : base(context)
@@ -38,7 +39,7 @@ public sealed partial class NewLetterViewModel : ViewModelBase
 
     public bool ShowCounter => TextLimits.LetterText - Text.Length < TextLimits.CounterThreshold;
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSend))]
     private async Task SendAsync()
     {
         if (!CanSend)
@@ -46,7 +47,7 @@ public sealed partial class NewLetterViewModel : ViewModelBase
             return;
         }
 
-        if (await RunAsync(async () => await letters.CreateAsync(Text, DateOnly.FromDateTime(OpenDate))))
+        if (await RunAsync(async () => await letters.CreateAsync(Text, DateOnly.FromDateTime(OpenDate ?? MinDate))))
         {
             await scheduler.RefreshAsync();
             await Navigation.GoBackAsync();

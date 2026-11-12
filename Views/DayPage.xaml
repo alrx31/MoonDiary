@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ViewModelPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:views="clr-namespace:MoonDiary.Views"
+                     xmlns:c="clr-namespace:MoonDiary.Controls"
+                     xmlns:p="clr-namespace:MoonDiary.Presentation;assembly=MoonDiary.Presentation"
+                     xmlns:vm="clr-namespace:MoonDiary.Presentation.ViewModels;assembly=MoonDiary.Presentation"
+                     xmlns:cal="clr-namespace:MoonDiary.Core.Calendar;assembly=MoonDiary.Core"
+                     x:Class="MoonDiary.Views.DayPage"
+                     x:DataType="vm:DayViewModel">
+  <Grid RowDefinitions="Auto,*" Padding="{StaticResource PagePadding}" RowSpacing="{StaticResource SpaceS}">
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <Button Text="‹"
+              Style="{StaticResource IconButton}"
+              Command="{Binding BackCommand}"
+              SemanticProperties.Description="{x:Static p:Strings.Common_Back}"
+              AutomationId="DayBackButton" />
+      <Label Grid.Column="1" Text="{Binding Title}" Style="{StaticResource TitleLabel}" HorizontalTextAlignment="Center" VerticalOptions="Center" AutomationId="DayTitle" />
+      <Button Grid.Column="2"
+              Text="⋮"
+              Style="{StaticResource IconButton}"
+              IsVisible="{Binding HasEvening}"
+              Command="{Binding MenuCommand}"
+              SemanticProperties.Description="{x:Static p:Strings.Day_Menu}"
+              AutomationId="DayMenuButton" />
+    </Grid>
+    <ScrollView Grid.Row="1">
+      <VerticalStackLayout Spacing="{StaticResource SpaceS}">
+        <Label Text="{x:Static p:Strings.Day_Evening}" Style="{StaticResource SectionLabel}" />
+        <Border Style="{StaticResource Card}">
+          <VerticalStackLayout Spacing="{StaticResource SpaceS}">
+            <Label Text="{x:Static p:Strings.Day_NoEntry}" Style="{StaticResource MutedLabel}" IsVisible="{Binding ShowEmpty}" AutomationId="DayEmptyLabel" />
+            <Label Text="{x:Static p:Strings.Day_FromCheckins}" Style="{StaticResource SecondaryLabel}" IsVisible="{Binding IsFromCheckins}" />
+            <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{StaticResource SpaceM}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource SpaceS}" IsVisible="{Binding HasMood}">
+              <Label Text="{Binding Energy, StringFormat='⚡ {0}'}" Style="{StaticResource EnergyLabel}" AutomationId="DayEnergyLabel" />
+              <c:MoodBadge Grid.Column="1" Kind="Energy" Value="{Binding Energy}" VerticalOptions="Center" />
+              <Label Grid.Row="1" Text="{Binding Positivity, StringFormat='☺ {0}'}" Style="{StaticResource PositivityLabel}" AutomationId="DayPositivityLabel" />
+              <c:MoodBadge Grid.Row="1" Grid.Column="1" Kind="Positivity" Value="{Binding Positivity}" VerticalOptions="Center" />
+            </Grid>
+            <VerticalStackLayout IsVisible="{Binding HasDone}">
+              <Label Text="{x:Static p:Strings.Day_Done}" Style="{StaticResource SecondaryLabel}" />
+              <Label Text="{Binding Done}" AutomationId="DayDoneLabel" />
+            </VerticalStackLayout>
+            <VerticalStackLayout IsVisible="{Binding HasAchievement}">
+              <Label Text="{x:Static p:Strings.Day_Achievement}" Style="{StaticResource SecondaryLabel}" />
+              <Label Text="{Binding Achievement}" AutomationId="DayAchievementLabel" />
+            </VerticalStackLayout>
+            <VerticalStackLayout IsVisible="{Binding HasFeelings}">
+              <Label Text="{x:Static p:Strings.Day_Feelings}" Style="{StaticResource SecondaryLabel}" />
+              <Label Text="{Binding Feelings}" AutomationId="DayFeelingsLabel" />
+            </VerticalStackLayout>
+            <Button Text="{Binding FillText}"
+                    Style="{StaticResource PrimaryButton}"
+                    IsVisible="{Binding ShowFill}"
+                    Command="{Binding FillCommand}"
+                    AutomationId="DayFillButton" />
+          </VerticalStackLayout>
+        </Border>
+        <Label Text="{x:Static p:Strings.Day_Checkins}" Style="{StaticResource SectionLabel}" />
+        <Border Style="{StaticResource Card}">
+          <VerticalStackLayout>
+            <Label Text="{x:Static p:Strings.Day_NoCheckins}" Style="{StaticResource MutedLabel}">
+              <Label.Triggers>
+                <DataTrigger TargetType="Label" Binding="{Binding HasCheckins}" Value="True">
+                  <Setter Property="IsVisible" Value="False" />
+                </DataTrigger>
+              </Label.Triggers>
+            </Label>
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Checkins}">
+              <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="vm:CheckinRowViewModel">
+                  <Grid ColumnDefinitions="56,96,*,Auto"
+                        Padding="{StaticResource RowPadding}"
+                        MinimumHeightRequest="{StaticResource TouchSize}"
+                        AutomationId="{Binding AutomationId}">
+                    <Grid.GestureRecognizers>
+                      <TapGestureRecognizer
+                          Command="{Binding OpenCheckinCommand, Source={RelativeSource AncestorType={x:Type vm:DayViewModel}}, x:DataType=vm:DayViewModel}"
+                          CommandParameter="{Binding .}" />
+                    </Grid.GestureRecognizers>
+                    <Label Text="{Binding Time}" Style="{StaticResource SecondaryLabel}" VerticalOptions="Center" />
+                    <Label Grid.Column="1" Text="{Binding Mood}" VerticalOptions="Center" />
+                    <Label Grid.Column="2" Text="{Binding Text}" Style="{StaticResource SecondaryLabel}" VerticalOptions="Center" LineBreakMode="TailTruncation" MaxLines="1" />
+                    <Label Grid.Column="3" Text="›" Style="{StaticResource MutedLabel}" VerticalOptions="Center" />
+                  </Grid>
+                </DataTemplate>
+              </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+            <Button Text="{x:Static p:Strings.Calendar_Checkin}"
+                    Style="{StaticResource SecondaryButton}"
+                    IsVisible="{Binding ShowCheckin}"
+                    Command="{Binding NewCheckinCommand}"
+                    AutomationId="DayCheckinButton" />
+          </VerticalStackLayout>
+        </Border>
+      </VerticalStackLayout>
+    </ScrollView>
+  </Grid>
+</views:ViewModelPage>
