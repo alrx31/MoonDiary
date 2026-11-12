@@ -1,0 +1,8 @@
+<Project>
+
+  <!-- UseMaui задаётся в самом проекте, поэтому условие проверяется здесь, а не в Directory.Build.props. -->
+  <PropertyGroup Condition="'$(UseMaui)' != 'true'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+</Project>

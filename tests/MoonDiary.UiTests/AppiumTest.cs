@@ -43,6 +43,7 @@ public abstract class AppiumTest : IDisposable
     public void Dispose()
     {
         Driver.Quit();
+        GC.SuppressFinalize(this);
     }
 
     protected AppiumElement FindElement(string automationId)
