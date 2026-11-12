@@ -58,3 +58,22 @@ dotnet test tests/MoonDiary.UiTests/MoonDiary.UiTests.csproj -c Release --logger
 При падении теста в каталог результатов сохраняется PNG-скриншот.
 
 > Внимание: прогон использует `fullReset=true`, который удаляет данные приложения на выбранном устройстве. Запускайте UI-тесты только на эмуляторе, чтобы не потерять данные на реальном устройстве.
+
+## Проверки в CI
+
+Workflow `.github/workflows/unit-tests.yml` запускает модульные тесты при каждом pull request и пуше в `main` и `dev`. Gitea Actions читает файлы из `.github/workflows/`, поэтому отдельный workflow для Gitea не нужен.
+
+Что делает job `unit-tests` на `ubuntu-latest`:
+
+- ставит .NET 10;
+- выполняет `dotnet test tests/MoonDiary.Tests` с TRX-отчётом `unit.trx` в каталоге `TestResults/Unit`;
+- загружает каталог с отчётом артефактом `unit-tests-trx` — это происходит и при упавших тестах.
+
+Приложение в CI не собирается, Android SDK не нужен: тестовый проект ссылается только на `MoonDiary.Core`. UI-тесты на Appium в CI не запускаются, их прогоняют вручную перед релизом.
+
+Скачать отчёт: вкладка Actions → нужный прогон → блок Artifacts → `unit-tests-trx`.
+
+Проверка `unit-tests` становится обязательной в защите ветки. Это настраивает владелец репозитория вручную, один раз на каждом сервере:
+
+- GitHub: Settings → Branches → правило для `dev` (и `main`) → Require status checks to pass before merging → выбрать `unit-tests`.
+- Gitea: Settings → Branches → правило для `dev` (и `main`) → включить Status Check Pattern и указать `unit-tests`, либо добавить `unit-tests` в список обязательных проверок правила защиты.
