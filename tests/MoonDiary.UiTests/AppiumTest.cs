@@ -55,12 +55,21 @@ public abstract class AppiumTest : IDisposable
         options.AddAdditionalAppiumOption("appPackage", AppPackage);
         options.AddAdditionalAppiumOption("appActivity", $"{AppPackage}.MainActivity");
         options.AddAdditionalAppiumOption("autoGrantPermissions", true);
-        options.AddAdditionalAppiumOption("forceAppLaunch", true);
-        options.AddAdditionalAppiumOption(
-            "optionalIntentArguments",
-            $"--es moondiary_now \"{localNow}\" --es moondiary_db \"{database}\" --es moondiary_seed \"{seed}\"");
+        options.AddAdditionalAppiumOption("autoLaunch", false);
 
         driver = new AndroidDriver(appiumUrl, options);
+        driver.ExecuteScript("mobile: startActivity", new Dictionary<string, object>
+        {
+            ["component"] = $"{AppPackage}/{AppPackage}.MainActivity",
+            ["stop"] = true,
+            ["wait"] = true,
+            ["extras"] = new[]
+            {
+                new[] { "s", "moondiary_now", localNow },
+                new[] { "s", "moondiary_db", database },
+                new[] { "s", "moondiary_seed", seed }
+            }
+        });
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(15);
     }
 

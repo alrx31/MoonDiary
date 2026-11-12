@@ -10,6 +10,7 @@ public sealed class AppBootstrapper : IAppBootstrapper
 {
     private static readonly string[] JournalSuffixes = ["-wal", "-shm"];
 
+    private readonly SemaphoreSlim gate = new(1, 1);
     private readonly SqliteConnectionFactory factory;
     private readonly TagService tags;
     private readonly TimeProvider timeProvider;
@@ -29,14 +30,23 @@ public sealed class AppBootstrapper : IAppBootstrapper
 
     public async Task InitializeAsync()
     {
-        await Task.Run(() => new DatabaseInitializer(factory).Initialize());
-        await tags.SeedStarterTagsAsync();
-#if DEBUG
-        if (LaunchOptions.Current.Seed is { } seed)
+        await gate.WaitAsync();
+
+        try
         {
-            await services.GetRequiredService<DebugSeeder>().SeedAsync(seed);
-        }
+            await Task.Run(() => new DatabaseInitializer(factory).Initialize());
+            await tags.SeedStarterTagsAsync();
+#if DEBUG
+            if (LaunchOptions.Current.Seed is { } seed)
+            {
+                await services.GetRequiredService<DebugSeeder>().SeedAsync(seed);
+            }
 #endif
+        }
+        finally
+        {
+            gate.Release();
+        }
     }
 
     public Task<string?> QuarantineDatabaseAsync() => Task.Run(() =>

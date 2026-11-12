@@ -46,10 +46,9 @@ public static class MauiProgram
 
     private static void AddCoreServices(IServiceCollection services)
     {
-        services.AddSingleton<TimeProvider>(_ =>
-            LaunchOptions.Current.Now is { } now ? new ShiftedTimeProvider(now) : TimeProvider.System);
+        services.AddSingleton<TimeProvider, LaunchTimeProvider>();
         services.AddSingleton<DayClock>();
-        services.AddSingleton(_ => new SqliteConnectionFactory(LaunchOptions.DatabasePath));
+        services.AddSingleton(_ => new SqliteConnectionFactory(() => LaunchOptions.DatabasePath));
         services.AddSingleton(AnalyticsOptions.Default);
 
         services.AddSingleton<IEntryRepository, EntryRepository>();

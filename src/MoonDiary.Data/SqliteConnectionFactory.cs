@@ -4,12 +4,19 @@ namespace MoonDiary.Data;
 
 public sealed class SqliteConnectionFactory
 {
+    private readonly Func<string> pathProvider;
+
     public SqliteConnectionFactory(string databasePath)
+        : this(() => databasePath)
     {
-        DatabasePath = databasePath;
     }
 
-    public string DatabasePath { get; }
+    public SqliteConnectionFactory(Func<string> pathProvider)
+    {
+        this.pathProvider = pathProvider;
+    }
+
+    public string DatabasePath => pathProvider();
 
     public SqliteConnection Open()
     {
