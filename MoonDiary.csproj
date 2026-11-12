@@ -23,6 +23,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="src\MoonDiary.Core\MoonDiary.Core.csproj" />
 	</ItemGroup>
 

@@ -20,3 +20,9 @@ dotnet_diagnostic.CA1861.severity = none
 
 [*.{xaml,csproj,props,json,yml}]
 indent_size = 2
+
+[src/MoonDiary.Presentation/Strings.cs]
+dotnet_diagnostic.CA1707.severity = none
+
+[src/MoonDiary.Presentation/**.cs]
+dotnet_diagnostic.CA1863.severity = none
