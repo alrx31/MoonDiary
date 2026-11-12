@@ -88,8 +88,8 @@ public static class MauiProgram
         services.AddSingleton<ILaunchRequest, LaunchRequest>();
         services.AddSingleton<DebugSeeder>();
 #if ANDROID
-        services.AddSingleton<INotificationService, Platforms.Android.AndroidNotificationService>();
-        services.AddSingleton<IBackupSettings, Platforms.Android.AndroidBackupSettings>();
+        services.AddSingleton<INotificationService, AndroidNotificationService>();
+        services.AddSingleton<IBackupSettings, AndroidBackupSettings>();
 #else
         services.AddSingleton<INotificationService, DefaultNotificationService>();
         services.AddSingleton<IBackupSettings, DefaultBackupSettings>();

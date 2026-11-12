@@ -16,7 +16,7 @@ public sealed class FileService : IFileService
     public async Task<bool> SaveTextAsync(string fileName, string content)
     {
 #if ANDROID
-        return await Platforms.Android.DocumentSaver.SaveAsync(fileName, content);
+        return await DocumentSaver.SaveAsync(fileName, content);
 #else
         var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         await File.WriteAllTextAsync(Path.Combine(folder, fileName), content, Encoding.UTF8);
