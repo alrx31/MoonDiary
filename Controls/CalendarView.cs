@@ -25,10 +25,21 @@ public sealed class CalendarView : GraphicsView, IDrawable
     private const float HeaderHeight = 28;
     private const float CellHeight = 58;
     private const float SwipeDistance = 60;
-    private const double SlideShare = 0.22;
+    private const double SwipeShare = 0.25;
+    private const double FlingSpeed = 0.45;
+    private const double TouchSlop = 8;
+    private const string DragAnimation = "CalendarDrag";
 
     private PointF? start;
+    private PointF tapStart;
+    private PointF dragStart;
+    private PointF dragLast;
+    private long dragLastTime;
+    private double dragSpeed;
+    private bool dragging;
+    private bool dragTracking;
     private IReadOnlyList<CalendarDay>? shown;
+    private IReadOnlyList<CalendarDay>? pending;
     private int offset;
     private int rows = 5;
     private int slideVersion;
@@ -40,6 +51,7 @@ public sealed class CalendarView : GraphicsView, IDrawable
         StartInteraction += (_, args) => start = args.Touches.FirstOrDefault();
         EndInteraction += OnEndInteraction;
         CancelInteraction += (_, _) => start = null;
+        HandlerChanged += OnHandlerChanged;
     }
 
     public IReadOnlyList<CalendarDay>? Days
@@ -170,10 +182,11 @@ public sealed class CalendarView : GraphicsView, IDrawable
     private void OnDaysChanged()
     {
         var next = Days;
+        var current = pending ?? shown;
 
-        if (shown is { Count: > 0 } && next is { Count: > 0 } && Width > 0 && !SameMonth(shown[0].Date, next[0].Date))
+        if (current is { Count: > 0 } && next is { Count: > 0 } && Width > 0 && !SameMonth(current[0].Date, next[0].Date))
         {
-            _ = SlideAsync(next, next[0].Date > shown[0].Date ? -1 : 1);
+            _ = SlideAsync(next, next[0].Date > current[0].Date ? -1 : 1);
         }
         else
         {
@@ -200,23 +213,204 @@ public sealed class CalendarView : GraphicsView, IDrawable
     private async Task SlideAsync(IReadOnlyList<CalendarDay> days, int direction)
     {
         var version = ++slideVersion;
-        var shift = Width * SlideShare;
+        var width = Width;
 
+        pending = days;
+        this.AbortAnimation(DragAnimation);
         this.CancelAnimations();
+
+        var outLength = (uint)Math.Max(60, 160 * (1 - (Math.Abs(TranslationX) / width)));
+
         await Task.WhenAll(
-            this.TranslateToAsync(direction * shift, 0, 120, Easing.CubicIn),
-            this.FadeToAsync(0, 120, Easing.CubicIn));
+            this.TranslateToAsync(direction * width, 0, outLength, Easing.CubicIn),
+            this.FadeToAsync(0.2, outLength, Easing.CubicIn));
 
         if (version != slideVersion)
         {
             return;
         }
 
+        pending = null;
         Apply(days);
-        TranslationX = -direction * shift;
+        TranslationX = -direction * width;
         await Task.WhenAll(
-            this.TranslateToAsync(0, 0, 220, Easing.CubicOut),
-            this.FadeToAsync(1, 220, Easing.CubicOut));
+            this.TranslateToAsync(0, 0, 240, Easing.CubicOut),
+            this.FadeToAsync(1, 240, Easing.CubicOut));
+    }
+
+    private void OnHandlerChanged(object? sender, EventArgs e)
+    {
+#if ANDROID
+        if (Handler?.PlatformView is Android.Views.View view)
+        {
+            view.SetLayerType(Android.Views.LayerType.Hardware, null);
+            view.Touch -= OnPlatformTouch;
+            view.Touch += OnPlatformTouch;
+        }
+#endif
+    }
+
+#if ANDROID
+    private void OnPlatformTouch(object? sender, Android.Views.View.TouchEventArgs args)
+    {
+        if (sender is not Android.Views.View view || args.Event is not { } motion)
+        {
+            return;
+        }
+
+        var density = view.Resources?.DisplayMetrics?.Density ?? 1;
+        var point = new PointF(motion.GetX() / density, motion.GetY() / density);
+        var screen = new PointF(motion.RawX / density, motion.RawY / density);
+
+        args.Handled = true;
+
+        switch (motion.ActionMasked)
+        {
+            case Android.Views.MotionEventActions.Down:
+                OnDragStart(point, screen, motion.EventTime);
+                break;
+            case Android.Views.MotionEventActions.Move:
+                if (OnDragMove(screen, motion.EventTime))
+                {
+                    view.Parent?.RequestDisallowInterceptTouchEvent(true);
+                }
+
+                break;
+            case Android.Views.MotionEventActions.Up:
+                OnDragEnd(point, screen, false);
+                break;
+            case Android.Views.MotionEventActions.Cancel:
+                OnDragEnd(point, screen, true);
+                break;
+        }
+    }
+#endif
+
+    private void OnDragStart(PointF point, PointF screen, long time)
+    {
+        tapStart = point;
+        dragStart = screen;
+        dragLast = screen;
+        dragLastTime = time;
+        dragSpeed = 0;
+        dragging = false;
+        dragTracking = true;
+    }
+
+    private bool OnDragMove(PointF point, long time)
+    {
+        if (!dragTracking)
+        {
+            return false;
+        }
+
+        var dx = point.X - dragStart.X;
+        var dy = point.Y - dragStart.Y;
+
+        if (!dragging)
+        {
+            if (Math.Abs(dy) > TouchSlop && Math.Abs(dy) > Math.Abs(dx))
+            {
+                dragTracking = false;
+
+                return false;
+            }
+
+            if (Math.Abs(dx) <= TouchSlop)
+            {
+                return false;
+            }
+
+            dragging = true;
+            ++slideVersion;
+            this.AbortAnimation(DragAnimation);
+            this.CancelAnimations();
+
+            if (pending is not null)
+            {
+                Apply(pending);
+                pending = null;
+            }
+        }
+
+        var elapsed = Math.Max(1, time - dragLastTime);
+
+        dragSpeed = (0.6 * ((point.X - dragLast.X) / elapsed)) + (0.4 * dragSpeed);
+        dragLast = point;
+        dragLastTime = time;
+
+        var offset = dx;
+        var blocked = dx < 0 ? NextCommand?.CanExecute(null) != true : PreviousCommand?.CanExecute(null) != true;
+
+        if (blocked)
+        {
+            offset = dx / 4;
+        }
+
+        TranslationX = offset;
+        Opacity = 1 - (0.5 * Math.Min(1, Math.Abs(offset) / Math.Max(1, Width)));
+
+        return true;
+    }
+
+    private void OnDragEnd(PointF point, PointF screen, bool cancelled)
+    {
+        var wasDragging = dragging;
+        var tracking = dragTracking;
+
+        dragging = false;
+        dragTracking = false;
+
+        if (!wasDragging)
+        {
+            if (!cancelled && tracking)
+            {
+                TapAt(tapStart);
+            }
+
+            return;
+        }
+
+        var dx = screen.X - dragStart.X;
+        var passed = !cancelled
+                     && (Math.Abs(dx) >= Width * SwipeShare
+                         || (Math.Abs(dragSpeed) >= FlingSpeed && Math.Sign(dragSpeed) == Math.Sign(dx)));
+        var command = dx > 0 ? PreviousCommand : NextCommand;
+
+        if (passed && command?.CanExecute(null) == true)
+        {
+            command.Execute(null);
+
+            return;
+        }
+
+        var fromX = TranslationX;
+        var fromOpacity = Opacity;
+
+        new Animation(value =>
+            {
+                TranslationX = fromX * value;
+                Opacity = 1 - ((1 - fromOpacity) * value);
+            },
+            1,
+            0).Commit(this, DragAnimation, 16, 260, Easing.CubicOut);
+    }
+
+    private void TapAt(PointF point)
+    {
+        if (shown is null || Width <= 0 || point.Y < HeaderHeight)
+        {
+            return;
+        }
+
+        var column = (int)(point.X / (Width / 7));
+        var row = (int)((point.Y - HeaderHeight) / CellHeight);
+        var index = (row * 7) + column - offset;
+
+        if (index >= 0 && index < shown.Count && DayTappedCommand?.CanExecute(shown[index].Date) == true)
+        {
+            DayTappedCommand.Execute(shown[index].Date);
+        }
     }
 
     private void OnEndInteraction(object? sender, TouchEventArgs args)
@@ -244,18 +438,6 @@ public sealed class CalendarView : GraphicsView, IDrawable
             return;
         }
 
-        if (shown is null || Width <= 0 || end.Y < HeaderHeight)
-        {
-            return;
-        }
-
-        var column = (int)(end.X / (Width / 7));
-        var row = (int)((end.Y - HeaderHeight) / CellHeight);
-        var index = (row * 7) + column - offset;
-
-        if (index >= 0 && index < shown.Count && DayTappedCommand?.CanExecute(shown[index].Date) == true)
-        {
-            DayTappedCommand.Execute(shown[index].Date);
-        }
+        TapAt(end);
     }
 }
