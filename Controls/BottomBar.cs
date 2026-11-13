@@ -9,6 +9,9 @@ namespace MoonDiary.Controls;
 
 public sealed class BottomBar : ContentView
 {
+    private const double VerticalPadding = 6;
+    private const double FillMargin = 6;
+
     private const string CalendarIcon =
         "M5,5 H19 A2,2 0 0 1 21,7 V19 A2,2 0 0 1 19,21 H5 A2,2 0 0 1 3,19 V7 A2,2 0 0 1 5,5 Z M3,10 H21 M8,3 V7 M16,3 V7";
 
@@ -35,16 +38,15 @@ public sealed class BottomBar : ContentView
                 new ColumnDefinition(GridLength.Star),
                 new ColumnDefinition(GridLength.Star)
             ],
-            Padding = new Thickness(4, 6, 4, 6)
+            Padding = new Thickness(4, VerticalPadding, 4, VerticalPadding)
         };
-        var fill = new Button
+        var slot = new BoxView
         {
-            Text = "+",
-            Style = Palette.Style("FillButton"),
-            AutomationId = "TabFill",
-            Command = viewModel.FillCommand,
-            VerticalOptions = LayoutOptions.Center,
-            Margin = new Thickness(6, 0)
+            WidthRequest = DropButton.Diameter,
+            HeightRequest = DropButton.Diameter,
+            Color = Colors.Transparent,
+            Margin = new Thickness(FillMargin, 0),
+            InputTransparent = true
         };
         var divider = new BoxView { Style = Palette.Style("Divider") };
         var root = new Grid
@@ -52,10 +54,18 @@ public sealed class BottomBar : ContentView
             RowDefinitions = [new RowDefinition(1), new RowDefinition(GridLength.Auto)]
         };
 
-        SemanticProperties.SetDescription(fill, Strings.Tab_Fill);
+        FillButton = new DropButton
+        {
+            Command = viewModel.FillCommand,
+            AutomationId = "TabFill",
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.End,
+            Margin = new Thickness(0, 0, 0, VerticalPadding)
+        };
+        SemanticProperties.SetDescription(FillButton, Strings.Tab_Fill);
         tabs.Add(CreateItem(viewModel, AppTab.Calendar, Strings.Tab_Calendar, CalendarIcon), 0);
         tabs.Add(CreateItem(viewModel, AppTab.Analytics, Strings.Tab_Analytics, AnalyticsIcon), 1);
-        tabs.Add(fill, 2);
+        tabs.Add(slot, 2);
         tabs.Add(CreateItem(viewModel, AppTab.Letters, Strings.Tab_Letters, LettersIcon), 3);
         tabs.Add(CreateItem(viewModel, AppTab.User, Strings.Tab_User, UserIcon), 4);
         root.Add(divider);
@@ -74,6 +84,8 @@ public sealed class BottomBar : ContentView
             Paint();
         }
     }
+
+    public DropButton FillButton { get; }
 
     protected override void OnParentSet()
     {

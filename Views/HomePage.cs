@@ -29,6 +29,8 @@ public sealed class HomePage : AppPage
 
         root.Add(host);
         root.Add(bar, 0, 1);
+        Grid.SetRowSpan(bar.FillButton, 2);
+        root.Add(bar.FillButton);
         Content = root;
         tabs.Changed += () => _ = ShowAsync(tabs.Current, animate: true);
     }
