@@ -33,17 +33,10 @@
                       PreviousCommand="{Binding PreviousCommand}"
                       NextCommand="{Binding NextCommand}"
                       AutomationId="CalendarGrid" />
-      <Grid ColumnDefinitions="*,Auto">
-        <HorizontalStackLayout Spacing="{StaticResource SpaceM}" VerticalOptions="Center">
-          <Label Text="⚡ энергия" Style="{StaticResource SecondaryLabel}" />
-          <Label Text="☺ позитив" Style="{StaticResource SecondaryLabel}" />
-        </HorizontalStackLayout>
-        <Button Grid.Column="1"
-                Text="{x:Static p:Strings.Calendar_Checkin}"
-                Style="{StaticResource SecondaryButton}"
-                Command="{Binding CheckinCommand}"
-                AutomationId="CalendarCheckinButton" />
-      </Grid>
+      <HorizontalStackLayout Spacing="{StaticResource SpaceM}" VerticalOptions="Center">
+        <Label Text="⚡ энергия" Style="{StaticResource SecondaryLabel}" />
+        <Label Text="☺ позитив" Style="{StaticResource SecondaryLabel}" />
+      </HorizontalStackLayout>
       <BoxView Style="{StaticResource Divider}" />
       <Label Text="{x:Static p:Strings.Calendar_Empty}"
              Style="{StaticResource EmptyLabel}"

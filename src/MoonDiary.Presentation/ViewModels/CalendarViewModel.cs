@@ -74,9 +74,6 @@ public sealed partial class CalendarViewModel : ViewModelBase
             ? Task.CompletedTask
             : Navigation.PushAsync(Routes.Day, NavParams.Of((NavParams.DayKey, date)));
 
-    [RelayCommand]
-    private Task CheckinAsync() => Navigation.PushAsync(Routes.Checkin);
-
     private async Task LoadAsync()
     {
         try
