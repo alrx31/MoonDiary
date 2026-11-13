@@ -112,6 +112,7 @@ public static class Strings
     public const string User_Drafts = "Черновики";
     public const string User_Tags = "Блоки-подсказки";
     public const string User_Settings = "Настройки";
+    public const string User_Version = "Версия {0}";
 
     public const string Drafts_Empty = "Черновиков нет";
     public const string Drafts_OnlyMood = "настроение";

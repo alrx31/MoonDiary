@@ -27,6 +27,11 @@
       <c:ListRow Text="{x:Static p:Strings.User_Settings}" Command="{Binding OpenSettingsCommand}" AutomationId="UserSettingsRow" />
       <BoxView Style="{StaticResource Divider}" Margin="{StaticResource SectionMargin}" />
       <Label Text="{Binding Streak}" Style="{StaticResource EnergyLabel}" AutomationId="UserStreakLabel" />
+      <Label Text="{Binding Version}"
+             Style="{StaticResource SecondaryLabel}"
+             HorizontalTextAlignment="Center"
+             Margin="{StaticResource SectionMargin}"
+             AutomationId="UserVersionLabel" />
     </VerticalStackLayout>
   </ScrollView>
 </views:TabView>

@@ -1,8 +1,10 @@
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MoonDiary.Core.Abstractions;
 using MoonDiary.Core.Insights;
 using MoonDiary.Presentation.Navigation;
+using MoonDiary.Presentation.Services;
 
 namespace MoonDiary.Presentation.ViewModels;
 
@@ -22,16 +24,20 @@ public sealed partial class UserViewModel : ViewModelBase
     [ObservableProperty]
     private string streak = string.Empty;
 
+    public string Version { get; }
+
     public UserViewModel(
         ViewModelContext context,
         ISettingsRepository settings,
         IDraftRepository drafts,
-        InsightsService insights)
+        InsightsService insights,
+        IAppVersion appVersion)
         : base(context)
     {
         this.settings = settings;
         this.drafts = drafts;
         this.insights = insights;
+        Version = string.Format(CultureInfo.InvariantCulture, Strings.User_Version, appVersion.VersionString);
     }
 
     public override async Task RefreshAsync()

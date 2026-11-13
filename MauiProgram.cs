@@ -91,6 +91,7 @@ public static class MauiProgram
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<IErrorLog, ErrorLog>();
         services.AddSingleton<IFileService, FileService>();
+        services.AddSingleton<IAppVersion, MauiAppVersion>();
         services.AddSingleton<IAppBootstrapper, AppBootstrapper>();
         services.AddSingleton<ILaunchRequest, LaunchRequest>();
         services.AddSingleton<DebugSeeder>();
