@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
+using OpenQA.Selenium.Interactions;
 using Xunit.Abstractions;
 
 namespace MoonDiary.UiTests;
@@ -90,6 +91,33 @@ public abstract class AppiumTest : IDisposable
     protected AppiumElement Find(string automationId) => Driver.FindElement(MobileBy.Id(automationId));
 
     protected void Tap(string automationId) => Find(automationId).Click();
+
+    protected void Slide(string automationId, double share)
+    {
+        var element = Find(automationId);
+        var y = element.Location.Y + (element.Size.Height / 2);
+        var from = element.Location.X + (element.Size.Height / 2);
+        var to = from + (int)((element.Size.Width - element.Size.Height) * share);
+        var finger = new PointerInputDevice(PointerKind.Touch);
+        var sequence = new ActionSequence(finger);
+        const int steps = 12;
+
+        sequence.AddAction(finger.CreatePointerMove(CoordinateOrigin.Viewport, from, y, TimeSpan.Zero));
+        sequence.AddAction(finger.CreatePointerDown(MouseButton.Left));
+
+        for (var step = 1; step <= steps; step++)
+        {
+            sequence.AddAction(finger.CreatePointerMove(
+                CoordinateOrigin.Viewport,
+                from + ((to - from) * step / steps),
+                y,
+                TimeSpan.FromMilliseconds(40)));
+        }
+
+        sequence.AddAction(finger.CreatePause(TimeSpan.FromMilliseconds(150)));
+        sequence.AddAction(finger.CreatePointerUp(MouseButton.Left));
+        Driver.PerformActions([sequence]);
+    }
 
     protected bool Exists(string automationId)
     {

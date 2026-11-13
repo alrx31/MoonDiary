@@ -37,6 +37,13 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
+#if ANDROID
+        Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping(nameof(IView.Background), (handler, _) =>
+            handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent));
+        Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping(nameof(IView.Background), (handler, _) =>
+            handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent));
+#endif
+
         AddCoreServices(builder.Services);
         AddPlatformServices(builder.Services);
         AddPages(builder.Services);

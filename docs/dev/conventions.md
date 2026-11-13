@@ -47,6 +47,9 @@
 
 - Страница наследует `ViewModelPage`, логика — только во ViewModel из Presentation.
 - Сервисы, хранилища, страницы и ViewModel регистрируются явно в `MauiProgram.cs`.
+- Четыре вкладки (`CalendarTab`, `AnalyticsTab`, `LettersTab`, `UserTab`) наследуют `TabView` и живут внутри одной страницы `HomePage` вместе с нижним меню. Переключение идёт через `INavigationService.GoToTabAsync`.
+- Системные окна Android не используются. Подтверждения, меню и выбор времени показывает `IDialogService` нижней панелью (`Controls/SheetViews.cs`). `DatePicker`, `TimePicker`, `Picker`, `DisplayAlert` и `DisplayActionSheet` на страницах запрещены.
+- Кнопку «Назад» страница обрабатывает в `OnBack`, `OnBackButtonPressed` занят закрытием панели.
 - Цвета для рисуемых компонентов (`CalendarView`, `MoodScaleView`, `DynamicsChartView`) берутся через `Services/Palette.cs`, он читает те же ресурсы `Resources/Styles/Colors.xaml`.
 - Цвета, размеры шрифтов, отступы и радиусы — только ресурсы дизайн-системы из `Resources/Styles/`. HEX-цвета и числовые `FontSize`, `Padding`, `Margin`, `Spacing` в XAML страниц запрещены.
 - Экран собирается из компонентов `Controls/` (`ScreenHeader`, `Card`, `ListRow`, `EmptyState`, `Chip`, `MoodScaleView` и т. д.). Новый общий элемент сначала добавляется в компоненты и на витрину компонентов.

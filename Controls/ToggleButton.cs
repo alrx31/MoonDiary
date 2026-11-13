@@ -16,6 +16,7 @@ public sealed class ToggleButton : Button
         FontSize = 15;
         MinimumHeightRequest = 44;
         LineBreakMode = LineBreakMode.NoWrap;
+        FlexLayout.SetShrink(this, 0);
         Paint();
     }
 

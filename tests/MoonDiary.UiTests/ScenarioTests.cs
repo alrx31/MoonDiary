@@ -83,6 +83,81 @@ public class ScenarioTests : AppiumTest
     });
 
     [Fact]
+    public void Wizard_SlideToEnd_SkipsCard() => RunScenario(() =>
+    {
+        Launch(Evening);
+        Tap("WizardEnergy3");
+        Tap("WizardPositivity3");
+        Tap("WizardContinueButton");
+
+        var first = Find("WizardCardTitle").Text;
+
+        Slide("WizardSkipSlider", 1.0);
+        Thread.Sleep(1500);
+
+        Assert.NotEqual(first, Find("WizardCardTitle").Text);
+    });
+
+    [Fact]
+    public void Wizard_ShortSlide_StaysOnCard() => RunScenario(() =>
+    {
+        Launch(Evening);
+        Tap("WizardEnergy3");
+        Tap("WizardPositivity3");
+        Tap("WizardContinueButton");
+
+        var first = Find("WizardCardTitle").Text;
+
+        Slide("WizardSkipSlider", 0.4);
+        Thread.Sleep(1500);
+
+        Assert.Equal(first, Find("WizardCardTitle").Text);
+    });
+
+    [Fact]
+    public void Tabs_Switch_KeepBottomBarAndShowContent() => RunScenario(() =>
+    {
+        Launch("2026-11-11T12:00:00+03:00");
+        Tap("TabLetters");
+        Assert.True(Find("LettersNewButton").Displayed);
+
+        Tap("TabUser");
+        Assert.True(Find("UserSettingsRow").Displayed);
+
+        Tap("TabCalendar");
+        Assert.True(Find("CalendarMonthTitle").Displayed);
+    });
+
+    [Fact]
+    public void NewLetter_PresetAndTimeSheet_ChangeOpenMoment() => RunScenario(() =>
+    {
+        Launch("2026-11-11T12:00:00+03:00");
+        Tap("TabLetters");
+        Tap("LettersNewButton");
+        Tap("NewLetterPreset30");
+        Tap("NewLetterDaysPlus");
+        Assert.Equal("31 день", Find("NewLetterDaysLabel").Text);
+
+        Tap("NewLetterTimeButton");
+        Tap("TimeSheetHourPlus");
+        Tap("TimeSheetMinutePlus");
+        Tap("SheetDone");
+        Thread.Sleep(600);
+
+        Assert.Equal("Откроется 12 декабря 2026, 11:05", Find("NewLetterOpenLabel").Text);
+    });
+
+    [Fact]
+    public void Calendar_PreviousMonth_ChangesTitle() => RunScenario(() =>
+    {
+        Launch("2026-11-11T12:00:00+03:00");
+        Tap("CalendarPreviousButton");
+        Thread.Sleep(600);
+
+        Assert.Equal("Октябрь 2026", Find("CalendarMonthTitle").Text);
+    });
+
+    [Fact]
     public void Wizard_Close_CreatesDraft() => RunScenario(() =>
     {
         Launch(Evening);
