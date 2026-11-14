@@ -1,130 +1,147 @@
 # MoonDiary
 
-Личный дневник настроения. Название от mood и moon: записи делаются вечером, когда день закончился.
+A personal mood diary for Android: you log the day in the evening, when it is over, and the app turns those entries into a calendar, weekly insights, and advice.
 
-Правила разработки и слои проекта описаны в [docs/dev/conventions.md](docs/dev/conventions.md).
+> The UI strings in the app are Russian.
 
-## Состав
+<!-- Screenshot: add a calendar or evening-wizard screenshot here, e.g. ![MoonDiary calendar](docs/screenshot.png) -->
 
-| Проект | Содержание |
-|---|---|
-| `src/MoonDiary.Core` | домен, правила, сервисы, ресурсы JSON |
-| `src/MoonDiary.Data` | SQLite, миграции, хранилища |
-| `src/MoonDiary.Presentation` | ViewModel, навигация, строки интерфейса |
-| `MoonDiary.csproj` | приложение MAUI под Android: страницы, компоненты, сервисы |
-| `tests/MoonDiary.Tests` | модульные тесты |
-| `tests/MoonDiary.UiTests` | UI-тесты на Appium |
+## Features
 
-## Сборка под Android
+- **Evening entry wizard** — one evening entry per day, with two 1–5 mood scales (energy and positivity) and optional cards for what got done, an achievement, and how the day felt.
+- **Daytime check-ins** — quick mood notes during the day (the same two scales plus short text); several check-ins per day are allowed.
+- **Drafts** — an unfinished evening entry can be saved as a draft (at most one draft per day) and continued later.
+- **Tag blocks** — short, tappable prompt phrases with an icon and a life-direction (sleep, work, health, relationships, household, emotions). Starter tags ship with the app; custom tags can be created, archived, and suggested based on usage.
+- **Calendar dashboard** — the home screen shows a month of days colored by mood, with a day detail view.
+- **Weekly analytics and reports** — local rules produce a week summary, pattern findings, achievements, week-to-week comparison, a mood dynamics chart, and advice the user can mark useful or not relevant. Reports can be listed and opened later.
+- **Letters** — write a note to your future self, choose an open date (from the next day onward), and get a local notification at 10:00 when a letter is due.
+- **Reminders** — optional local evening reminder (default 18:00) with an adaptive-reminder setting.
+- **Settings** — light, dark, or auto theme; reminder preferences; JSON export and import of local data (import first writes a backup); Android auto-backup status when the platform supports it.
+- **Onboarding and first-run routing** — first launch goes through onboarding; later launches open the calendar, the evening wizard, a weekly report, or a due letter, depending on time and state. A dedicated screen is shown if the database cannot be opened.
+- **Offline and on-device** — data lives in a local SQLite database. There is no account, cloud sync, or server-side AI.
+- **Test hooks (debug builds only)** — intent extras can override the clock, database file, seed data, and the first screen so UI tests can run deterministically. Release builds ignore these extras.
 
-Нужны .NET 10 с workload `maui`, Android SDK и JDK. Если SDK и JDK стоят не в стандартных местах, пути передаются свойствами:
+## Tech stack
 
-```bash
-dotnet build MoonDiary.csproj -f net10.0-android -p:AndroidSdkDirectory="$HOME/Library/Android/sdk" -p:JavaSdkDirectory="$HOME/Library/Java/microsoft-jdk"
+- **.NET 10** and **.NET MAUI** (Android only; `net10.0-android`, min SDK 21)
+- **CommunityToolkit.Mvvm** for ViewModels and commands
+- **Microsoft.Data.Sqlite** with handwritten SQL migrations
+- **xUnit** unit tests; **Appium** + UiAutomator2 UI tests (`Appium.WebDriver`)
+- Central package versions via `Directory.Packages.props`
+- GitHub Actions workflow for unit tests (`.github/workflows/unit-tests.yml`)
+
+## Architecture
+
+The MAUI app project hosts Android pages and controls. Domain rules, data access, and ViewModels live in separate class libraries so unit tests can run without the Android SDK.
+
+```mermaid
+flowchart LR
+  Views["Views / Controls<br/>(MAUI Android)"] --> VMs["MoonDiary.Presentation<br/>ViewModels, navigation, scheduling"]
+  VMs --> Core["MoonDiary.Core<br/>domain, wizard, analytics, letters"]
+  Core --> Data["MoonDiary.Data<br/>SQLite + SQL migrations"]
+  Data --> DB[(Local SQLite)]
 ```
 
-APK появляется в `bin/Debug/net10.0-android/com.moondiary.app-Signed.apk`.
+- `MoonDiary.Core` — domain model, evening wizard, check-ins, tags, calendar calculations, analytics rule engine (JSON rule catalog), weekly reports, letters, reminders, and JSON export/import.
+- `MoonDiary.Data` — SQLite connection, migration runner, and repositories.
+- `MoonDiary.Presentation` — ViewModels, route names, theme/file/notification abstractions, startup coordinator, and debug launch-option parsing.
+- `MoonDiary.csproj` — the Android application: `AppShell`, pages under `Views/`, custom controls, and platform services under `Platforms/Android`.
+- `tests/MoonDiary.Tests` — unit tests against the libraries above (31 test files).
+- `tests/MoonDiary.UiTests` — black-box Appium scenarios against a debug APK.
 
-Установить SDK и JDK можно той же командой с целью `InstallAndroidDependencies` и свойством `-p:AcceptAndroidSdkLicenses=True`.
+Product behavior is specified in `docs/requirements/`. Coding conventions and layering are in `docs/dev/conventions.md`.
 
-### Скрипт сборки APK
+## How to run
 
-```bash
-scripts/build-apk.sh debug
-```
+Prerequisites: **.NET 10** with the **MAUI** workload, an **Android SDK**, and a **JDK**.
 
-```bash
-scripts/build-apk.sh release
-```
+### Unit tests
 
-Готовый файл кладётся в `artifacts/moondiary-<версия>-<режим>.apk`. Пути к SDK и JDK берутся из `ANDROID_HOME` и `JAVA_HOME`, по умолчанию `~/Library/Android/sdk` и `~/Library/Java/microsoft-jdk`.
-
-Релиз без своего ключа подписывается отладочным: такой APK ставится на своё устройство, но не годится для публикации. Свой ключ задаётся переменными `MOONDIARY_KEYSTORE`, `MOONDIARY_KEY_ALIAS`, `MOONDIARY_KEYSTORE_PASS` и при необходимости `MOONDIARY_KEY_PASS`.
-
-## Тестовые параметры запуска
-
-Отладочная сборка читает параметры из extras интента, релизная их игнорирует.
-
-| Параметр | Значение |
-|---|---|
-| `moondiary_now` | текущее время, ISO 8601 со смещением: `2026-11-10T18:00:00+03:00` |
-| `moondiary_db` | имя файла базы в каталоге приложения, без `/` и `..` |
-| `moondiary_seed` | набор данных: `empty` (первый запуск пройден), `month` (месяц записей), `report` (месяц и непоказанный отчёт) |
-| `moondiary_open` | что открыть: `wizard` или `letter:<id>` |
-
-Пример:
-
-```bash
-adb shell am start -n com.moondiary.app/com.moondiary.app.MainActivity --es moondiary_now "2026-11-10T19:30:00+03:00" --es moondiary_db demo.db --es moondiary_seed month
-```
-
-## Тесты
-
-Модульные тесты запускаются командой:
+No Android SDK is required for this project:
 
 ```bash
 dotnet test tests/MoonDiary.Tests
 ```
 
-### UI-тесты на Appium
+CI on `ubuntu-latest` runs the same command on every push and pull request to `main` and `dev`, and uploads a TRX report.
 
-UI-тесты работают как чёрный ящик через Appium с драйвером UiAutomator2 и запускаются на Android-эмуляторе. Сценарии подменяют время и базу параметрами запуска, поэтому нужен отладочный APK. Перед прогоном нужны:
+### Build an APK
 
-- Android SDK и запущенный эмулятор
-- Node.js
-- Appium и драйвер UiAutomator2
+```bash
+dotnet build MoonDiary.csproj -f net10.0-android
+```
 
-Установка Appium и драйвера:
+If the SDK or JDK is not in a default location, pass the paths:
+
+```bash
+dotnet build MoonDiary.csproj -f net10.0-android \
+  -p:AndroidSdkDirectory="$ANDROID_HOME" \
+  -p:JavaSdkDirectory="$JAVA_HOME"
+```
+
+A signed debug APK is written to `bin/Debug/net10.0-android/com.moondiary.app-Signed.apk`.
+
+You can also use the repo script (paths default to `~/Library/Android/sdk` and `~/Library/Java/microsoft-jdk`, or to `ANDROID_HOME` / `JAVA_HOME`):
+
+```bash
+scripts/build-apk.sh debug
+scripts/build-apk.sh release
+```
+
+The script copies the APK to `artifacts/moondiary-<version>-<mode>.apk`. A release build without `MOONDIARY_KEYSTORE`, `MOONDIARY_KEY_ALIAS`, and `MOONDIARY_KEYSTORE_PASS` is signed with the debug key (fine for a personal device, not for store publishing).
+
+To install SDK components and accept licenses, use the `InstallAndroidDependencies` target with `-p:AcceptAndroidSdkLicenses=True`.
+
+### UI tests (Appium)
+
+These are not run in CI. You need a running Android emulator, Node.js, Appium, and the UiAutomator2 driver:
 
 ```bash
 npm install -g appium
 appium driver install uiautomator2
-```
-
-Сборка отладочного APK со встроенными сборками:
-
-```bash
 dotnet build MoonDiary.csproj -f net10.0-android -c Debug -p:EmbedAssembliesIntoApk=true
-```
-
-Запуск сервера Appium:
-
-```bash
 appium
 ```
 
-Запуск тестов с TRX-отчётом:
+In another terminal:
 
 ```bash
 export MOONDIARY_APK_PATH="$PWD/bin/Debug/net10.0-android/com.moondiary.app-Signed.apk"
 export MOONDIARY_TEST_RESULTS_DIR="$PWD/TestResults/Appium"
-dotnet test tests/MoonDiary.UiTests/MoonDiary.UiTests.csproj --logger "trx;LogFileName=appium.trx" --results-directory "$MOONDIARY_TEST_RESULTS_DIR"
+dotnet test tests/MoonDiary.UiTests/MoonDiary.UiTests.csproj \
+  --logger "trx;LogFileName=appium.trx" \
+  --results-directory "$MOONDIARY_TEST_RESULTS_DIR"
 ```
 
-Переменные окружения:
+Optional: `MOONDIARY_APPIUM_URL` (default `http://127.0.0.1:4723`) and `MOONDIARY_DEVICE_NAME` (default `Android`). Each scenario starts the app fresh with its own `ui-<id>.db`. Failed scenarios save a PNG under the results directory.
 
-- `MOONDIARY_APK_PATH` — обязательный путь к отладочному APK.
-- `MOONDIARY_APPIUM_URL` — адрес сервера Appium, по умолчанию `http://127.0.0.1:4723`.
-- `MOONDIARY_DEVICE_NAME` — имя устройства, по умолчанию `Android`.
-- `MOONDIARY_TEST_RESULTS_DIR` — каталог для TRX-отчёта и скриншотов, по умолчанию `TestResults/Appium`.
+### Debug launch extras
 
-Каждый сценарий запускает приложение заново (`mobile: startActivity` с остановкой процесса) и работает со своей базой `ui-<id>.db`, основная база приложения не затрагивается. При падении сценария в каталог результатов сохраняется PNG-скриншот.
+Debug builds read intent extras (`moondiary_now`, `moondiary_db`, `moondiary_seed`, `moondiary_open`). Example:
 
-## Проверки в CI
+```bash
+adb shell am start -n com.moondiary.app/com.moondiary.app.MainActivity \
+  --es moondiary_now "2026-11-10T19:30:00+03:00" \
+  --es moondiary_db demo.db \
+  --es moondiary_seed month
+```
 
-Workflow `.github/workflows/unit-tests.yml` запускает модульные тесты при каждом pull request и пуше в `main` и `dev`. Gitea Actions читает файлы из `.github/workflows/`, поэтому отдельный workflow для Gitea не нужен.
+Seed values present in the testing code include `empty`, `month`, and `report`. `moondiary_open` can be `wizard` or `letter:<id>`.
 
-Что делает job `unit-tests` на `ubuntu-latest`:
+## Project structure
 
-- ставит .NET 10;
-- выполняет `dotnet test tests/MoonDiary.Tests` с TRX-отчётом `unit.trx` в каталоге `TestResults/Unit`;
-- загружает каталог с отчётом артефактом `unit-tests-trx` — это происходит и при упавших тестах.
-
-Приложение в CI не собирается, Android SDK не нужен: тестовый проект ссылается только на библиотеки `MoonDiary.Core`, `MoonDiary.Data` и `MoonDiary.Presentation`. UI-тесты на Appium в CI не запускаются, их прогоняют вручную перед релизом.
-
-Скачать отчёт: вкладка Actions → нужный прогон → блок Artifacts → `unit-tests-trx`.
-
-Проверка `unit-tests` становится обязательной в защите ветки. Это настраивает владелец репозитория вручную, один раз на каждом сервере:
-
-- GitHub: Settings → Branches → правило для `dev` (и `main`) → Require status checks to pass before merging → выбрать `unit-tests`.
-- Gitea: Settings → Branches → правило для `dev` (и `main`) → включить Status Check Pattern и указать `unit-tests`, либо добавить `unit-tests` в список обязательных проверок правила защиты.
+```
+MoonDiary.csproj              # Android MAUI app
+AppShell.xaml                 # Shell routes: loading, onboarding, databaseError, calendar, analytics, letters, user
+Views/                        # Pages (wizard, check-in, calendar, reports, letters, settings, …)
+Controls/                     # Bottom bar, calendar, mood scale, charts, …
+Platforms/Android/            # Android entry point and platform services
+src/MoonDiary.Core/           # Domain and application services
+src/MoonDiary.Data/           # SQLite and migrations
+src/MoonDiary.Presentation/   # ViewModels and navigation
+tests/MoonDiary.Tests/        # Unit tests
+tests/MoonDiary.UiTests/      # Appium UI tests
+scripts/build-apk.sh
+docs/dev/conventions.md
+docs/requirements/            # Product requirements (Russian)
+```
